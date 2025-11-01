@@ -7,7 +7,7 @@ const ASCII = {
 class KeepCloudShellSession {
   constructor() {
     this.timeout = 0;
-    this.pingTimeout = 10000; // 10 minutes
+    this.pingTimeout = 600000; // 10 minutes
     this.pingString = ` ${ASCII.DEL}`; // space + backspace
   }
   onMessageHandler() {
@@ -152,6 +152,11 @@ const socketOpenHandler = (e) => {
   const [_, host, path] = socket.url.match(/wss:\/\/([^\/]+)\/\$hc\/([^\/]+)\/.*/);
   globalSettings.endpoint = { host, path };
 
+  defaultStartupCommands.push(
+    { command: { bash: `export SOCKET_HOST=${globalSettings.endpoint.host}`, pwsh: `$Env:SOCKET_HOST=${globalSettings.endpoint.host}` }, background: true, history: false },
+    { command: { bash: `export SOCKET_PATH=${globalSettings.endpoint.path}`, pwsh: `$Env:SOCKET_PATH=${globalSettings.endpoint.path}` }, background: true, history: false }
+  );
+
   init();
 };
 
@@ -221,15 +226,15 @@ window.addEventListener('startupFeatureStatus', async (e) => {
 
   try {
     globalSettings.shellType === 'bash' && e.detail.replaceCodeCommand?.status &&
-    startupCommands.push({
-      command: `function code () {
+      startupCommands.push({
+        command: `function code () {
   dirname="$(cd -- "$(dirname -- "$1")" && pwd)" || exit $?
   abspath="\${dirname%/}/$(basename -- "$1")"
   vscode tunnel --random-name --server-data-dir \${HOME}/code | sed -r "s|(https:\/\/insiders.vscode.dev\/[^ ]+)|\\1\${abspath}|"
 }`,
-      background: true,
-      history: false,
-    });
+        background: true,
+        history: false,
+      });
     globalSettings.shellType === 'bash' && e.detail.executeStartupScript?.status &&
       e.detail.executeStartupScript.options?.script &&
       startupCommands.push({
@@ -240,7 +245,7 @@ window.addEventListener('startupFeatureStatus', async (e) => {
 
     globalSettings.shellType === 'bash' && e.detail.executeDockerDaemon?.status &&
       startupCommands.push({
-        command: `test -z "$DOCKER_HOST" || ps aux | grep [r]ootlesskit > /dev/null || curl -L https://gist.githubusercontent.com/surajssd/e1bf909d48ab64517257188553e26f83/raw/6f3071ec0a4d831547263bb0e5edf9c3ef2f83bc/docker-build-fix.sh | bash && curl -s "https://${globalSettings.endpoint.host}/${globalSettings.endpoint.path}/tunnel" -X POST -H "Content-Type: application/json" -H "Authorization: Bearer $(az account get-access-token --query "accessToken" --output tsv)" -d "{\\"token\\": \\"$(az account get-access-token --query "accessToken" --output tsv --scope 46da2f7e-b5ef-422a-88d4-2a7f9de6a0b2/all)\\", \\"folderPath\\": \\"\\", \\"tunnelName\\": \\"tweakit\\", \\"extensions\\": []}" > /dev/null;`,
+        command: `test -z "$DOCKER_HOST" || ps aux | grep [r]ootlesskit > /dev/null || curl -L https://gist.githubusercontent.com/surajssd/e1bf909d48ab64517257188553e26f83/raw/6f3071ec0a4d831547263bb0e5edf9c3ef2f83bc/docker-build-fix.sh | bash && curl -s "https://\${SOCKET_HOST}/\${SOCKET_PATH}/tunnel" -X POST -H "Content-Type: application/json" -H "Authorization: Bearer $(az account get-access-token --query "accessToken" --output tsv)" -d "{\\"token\\": \\"$(az account get-access-token --query "accessToken" --output tsv --scope 46da2f7e-b5ef-422a-88d4-2a7f9de6a0b2/all)\\", \\"folderPath\\": \\"\\", \\"tunnelName\\": \\"tweakit\\", \\"extensions\\": []}" > /dev/null;`,
         background: true,
         history: false,
       });
