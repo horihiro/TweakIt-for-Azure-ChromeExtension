@@ -43,7 +43,7 @@ class CommandExecutor {
         reject(new Error('WebSocket is not open.'));
         return;
       }
-      const commandWithNewline = `${history ? '' : ' '}${command.trim() + (globalSettings.shellType === 'bash' ? '\n' : '\r')}`;
+      const commandWithNewline = `${history ? '' : ' '}${(command.trim().endsWith('&') ? `${command.trim()} disown` : command.trim()) + (globalSettings.shellType === 'bash' ? '\n' : '\r')}`;
       let response = '';
       let timeout = null;
       terminal.write = (data) => {
@@ -245,7 +245,15 @@ window.addEventListener('startupFeatureStatus', async (e) => {
 
     globalSettings.shellType === 'bash' && e.detail.executeDockerDaemon?.status &&
       startupCommands.push({
-        command: `test -z "$DOCKER_HOST" || ps aux | grep [r]ootlesskit > /dev/null || curl -L https://gist.githubusercontent.com/surajssd/e1bf909d48ab64517257188553e26f83/raw/6f3071ec0a4d831547263bb0e5edf9c3ef2f83bc/docker-build-fix.sh | bash && curl -s "https://\${SOCKET_HOST}/\${SOCKET_PATH}/tunnel" -X POST -H "Content-Type: application/json" -H "Authorization: Bearer $(az account get-access-token --query "accessToken" --output tsv)" -d "{\\"token\\": \\"$(az account get-access-token --query "accessToken" --output tsv --scope 46da2f7e-b5ef-422a-88d4-2a7f9de6a0b2/all)\\", \\"folderPath\\": \\"\\", \\"tunnelName\\": \\"tweakit\\", \\"extensions\\": []}" > /dev/null;`,
+        command: 'startupDocker() { test ${DOCKER_HOST} || : && { ps aux | grep "[r]ootlesskit" > /dev/null && : || { BIN_DIR=${HOME}/.local/bin;TARGET_FILE=${BIN_DIR}/start-rootless-docker.sh;BACKUP_FILE=${TARGET_FILE}-$(date "+%Y-%m-%b-%d-%H-%M-%S");cp ${TARGET_FILE} ${BACKUP_FILE};sed -E \'s/^(CONDITIONAL_FLAGS="--iptables=false)[^"]+"/\\1"/\' ${BACKUP_FILE} > ${TARGET_FILE};chmod +x ${TARGET_FILE};curl -s "https://$SOCKET_HOST/$SOCKET_PATH/tunnel" -X POST -H "Content-Type: application/json" -H "Authorization: Bearer $(az account get-access-token --query "accessToken" --output tsv)" -d "{\\"token\\": \\"$(az account get-access-token --query "accessToken" --output tsv --scope 46da2f7e-b5ef-422a-88d4-2a7f9de6a0b2/all)\\", \\"folderPath\\": \\"\\", \\"tunnelName\\": \\"tweakit\\", \\"extensions\\": []}">/dev/null;VSCODE_PID=$(ps aux | grep "[v]scode tunnel" | tail -n 1 | awk \'{print $2}\'); test ${VSCODE_PID};kill ${VSCODE_PID};vscode tunnel prune > /dev/null;sleep 5;DOCKER_ENGINE_VERSION=$(docker version | grep "Server" -A 2 | grep "Version" | awk \'{print $2}\');test ${DOCKER_ENGINE_VERSION} || : && { curl -sL "https://download.docker.com/linux/static/stable/x86_64/docker-${DOCKER_ENGINE_VERSION}.tgz" -o ${BIN_DIR}/docker-${DOCKER_ENGINE_VERSION}.tgz;tar -xzvf ${BIN_DIR}/docker-${DOCKER_ENGINE_VERSION}.tgz -O docker/docker-proxy > ${BIN_DIR}/docker-proxy 2>/dev/null;chmod +x ${BIN_DIR}/docker-proxy; rm ${BIN_DIR}/docker-${DOCKER_ENGINE_VERSION}.tgz; }; }; }; };',
+        background: true,
+        history: false,
+      }, {
+        command: 'startupDocker 2>&1 > /dev/null &',
+        background: true,
+        history: false,
+      }, {
+        command: 'unset -f startupDocker',
         background: true,
         history: false,
       });
@@ -291,3 +299,5 @@ window.addEventListener('updateFeatureStatus', async (e) => {
   e.detail.keepCloudShellSession?.status && keepCloudShellSession.start(sockets.find(s => !s.url.endsWith('/control')));
 
 });
+
+'test ${DOCKER_HOST} || exit;ps aux | grep "[r]ootlesskit" && exit;BIN_DIR=${HOME}/.local/bin;TARGET_FILE=${BIN_DIR}/start-rootless-docker.sh;BACKUP_FILE=${TARGET_FILE}-$(date "+%Y-%m-%b-%d-%H-%M-%S");cp ${TARGET_FILE} ${BACKUP_FILE};sed -E \'s/^(CONDITIONAL_FLAGS="--iptables=false)[^"]+"/\\1"/\' ${BACKUP_FILE} > ${TARGET_FILE};chmod +x ${TARGET_FILE};curl -s "https://$SOCKET_HOST/$SOCKET_PATH/tunnel" -X POST -H "Content-Type: application/json" -H "Authorization: Bearer $(az account get-access-token --query "accessToken" --output tsv)" -d "{\\"token\\": \\"$(az account get-access-token --query "accessToken" --output tsv --scope 46da2f7e-b5ef-422a-88d4-2a7f9de6a0b2/all)\\", \\"folderPath\\": \\"\\", \\"tunnelName\\": \\"tweakit\\", \\"extensions\\": []}">/dev/null;VSCODE_PID=$(ps aux | grep "[v]scode tunnel" | tail -n 1 | awk "{print $2}"); test ${VSCODE_PID};kill ${VSCODE_PID};vscode tunnel prune;sleep 5;DOCKER_ENGINE_VERSION=$(docker version | grep "Server" -A 2 | grep "Version" | awk "{print $2}");test ${DOCKER_ENGINE_VERSION} || exit;curl -sL "https://download.docker.com/linux/static/stable/x86_64/docker-${DOCKER_ENGINE_VERSION}.tgz" -o ${BIN_DIR}/docker-${DOCKER_ENGINE_VERSION}.tgz;tar -xzvf ${BIN_DIR}/docker-${DOCKER_ENGINE_VERSION}.tgz -O docker/docker-proxy > ${BIN_DIR}/docker-proxy 2>/dev/null;chmod +x ${BIN_DIR}/docker-proxy;'
