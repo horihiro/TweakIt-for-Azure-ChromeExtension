@@ -14,6 +14,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const tab = document.getElementById(tabId);
     try { chrome.storage.local.set({ [storageKey]: tabId }); } catch (e) { /* ignore when not available */ }
     tab.focus();
+    tab.blur();
   }
 
   tabs.forEach(tab => {
