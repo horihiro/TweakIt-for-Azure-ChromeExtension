@@ -259,6 +259,7 @@ window.addEventListener('startupFeatureStatus', async (e) => {
       });
 
     // Execute all startup commands
+    window.term.write(`${ASCII.ESC}[1K\r${ASCII.ESC}[48;5;31m[TWEAKIT] Executing Custom startup scripts...`);
     await startupCommands.reduce(async (p, options) => {
       await p;
       return commandExecutor.execute(
@@ -271,6 +272,8 @@ window.addEventListener('startupFeatureStatus', async (e) => {
       );
     }, Promise.resolve());
     globalSettings.user = (await commandExecutor.execute('whoami', globalSettings.shellPrompt, { background: true, history: false })).trim();
+    window.term.write(` Finished.${ASCII.ESC}[0m\r\n`);
+    window.term.write(globalSettings.shellPrompt);
   }
   catch (err) {
     console.error('Error executing startup commands:', err);

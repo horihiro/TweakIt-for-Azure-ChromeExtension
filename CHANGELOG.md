@@ -1,13 +1,12 @@
 # Release History
 ## [1.1.0](https://github.com/horihiro/TweakIt-for-Azure-ChromeExtension/releases/tag/1.1.0)
 ### New feature(s)
-  - Cloud Shell: keep Cloud Shell session alive for longer than the default timeout (ping/keep-alive implementation).
-  - Cloud Shell: support executing custom startup scripts (bash only) with options to show executed commands and record history.
+  - Cloud Shell: support executing custom startup scripts (bash only) with options to show executed commands and record to command history.
   - Cloud Shell: add `code` command helper to open files in `insiders.vscode.dev` (bash only).
   - Options / UI: add new Cloud Shell settings to the options page and popup to control the above features.
 
 ### Bug Fix(es)
-  - No user-facing bug fixes in this release.
+  - Cloud Shell: Improve logic for keep Cloud Shell session alive
 
 ### Remove feature(s)
   - No features removed in this release.
