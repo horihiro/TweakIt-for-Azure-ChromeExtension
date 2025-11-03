@@ -111,30 +111,35 @@ class AdvancedCopy extends Watcher {
     this.cache = {};
     this.menus = [{
       title: 'Resource name',
+      id: 'resource_copy_name',
       handler: (event) => {
         const resource = location.hash.match(this.re);
         resource && navigator.clipboard.writeText(resource[5]);
       }
     }, {
       title: 'Resource Id',
+      id: 'resource_copy_id',
       handler: (event) => {
         const resource = location.hash.match(this.re);
         resource && navigator.clipboard.writeText(resource[1]);
       }
     }, {
       title: 'Resource name and group as Azure CLI option',
+      id: 'resource_copy_azcli',
       handler: (event) => {
         const resource = location.hash.match(this.re);
         resource && navigator.clipboard.writeText(`--name ${resource[5]} --resource-group ${resource[2]}`);
       }
     }, {
       title: 'Resource name and group as Azure PowerShell option',
+      id: 'resource_copy_azpwsh',
       handler: (event) => {
         const resource = location.hash.match(this.re);
         resource && navigator.clipboard.writeText(`-Name ${resource[5]} -ResourceGroupName ${resource[2]}`);
       }
     }, {
       title: 'ARM template (JSON)',
+      id: 'resource_copy_arm_json',
       handler: async (event) => {
         const resource = location.hash.match(this.re);
         if (!resource) return;
@@ -162,6 +167,7 @@ class AdvancedCopy extends Watcher {
       }
     }, {
       title: 'ARM template (Bicep)',
+      id: 'resource_copy_arm_bicep',
       handler: async (event) => {
         const resource = location.hash.match(this.re);
         if (!resource) return;
@@ -188,6 +194,7 @@ class AdvancedCopy extends Watcher {
       }
     }, {
       title: 'Terraform (AzApi)',
+      id: 'resource_copy_terraform_azapi',
       handler: async (event) => {
         const resource = location.hash.match(this.re);
         if (!resource) return;
@@ -221,14 +228,27 @@ class AdvancedCopy extends Watcher {
                 Authorization: `Bearer ${await this.getAccessToken()}`
               }
             });
-          if (response.status !== 200 || (await response.json()).registrationState != 'Registered') return false;
-          return true;
+          if (response.status !== 200 || (await response.json()).registrationState != 'Registered') return {
+            visible: true,
+            available: false,
+            message: 'Cannot use AzAPI provider because Microsoft.AzureTerraform might not be registered.'
+          };
+          return {
+            visible: true,
+            available: true,
+            message: ''
+          };
         } catch (e) {
-          return false;
+          return {
+            visible: true,
+            available: false,
+            message: 'Failed to check Microsoft.AzureTerraform registration.'
+          };
         }
       }
     }, {
       title: 'Terraform (AzureRM)',
+      id: 'resource_copy_terraform_azurerm',
       handler: async (event) => {
         const resource = location.hash.match(this.re);
         if (!resource) return;
@@ -263,14 +283,27 @@ class AdvancedCopy extends Watcher {
                 Authorization: `Bearer ${await this.getAccessToken()}`
               }
             });
-          if (response.status !== 200 || (await response.json()).registrationState != 'Registered') return false;
-          return true;
+          if (response.status !== 200 || (await response.json()).registrationState != 'Registered') return {
+            visible: true,
+            available: false,
+            message: 'Cannot use AzureRM provider because Microsoft.AzureTerraform might not be registered.'
+          };
+          return {
+            visible: true,
+            available: true,
+            message: ''
+          };
         } catch (e) {
-          return false;
+          return {
+            visible: true,
+            available: false,
+            message: 'Failed to check Microsoft.AzureTerraform registration.'
+          };
         }
       }
     }, {
       title: 'VM and Bastion Ids as `az network bastion` option',
+      id: 'resource_copy_vm_bastion',
       handler: async (event) => {
         const resource = location.hash.match(this.re);
         if (!resource || resource[3].toLowerCase() !== 'microsoft.compute' || resource[4].toLowerCase() !== 'virtualmachines') return false;
@@ -281,8 +314,16 @@ class AdvancedCopy extends Watcher {
       },
       isAvailable: async () => {
         const resource = location.hash.match(this.re);
-        if (!resource || resource[3].toLowerCase() !== 'microsoft.compute' || resource[4].toLowerCase() !== 'virtualmachines') return false;
-        if (this.cache[resource[1]]?.bastionId) return true;
+        if (!resource || resource[3].toLowerCase() !== 'microsoft.compute' || resource[4].toLowerCase() !== 'virtualmachines') return {
+          visible: false,
+          available: false,
+          message: 'Not a virtual machine resource.'
+        };
+        if (this.cache[resource[1]]?.bastionId) return {
+          visible: true,
+          available: false,
+          message: ''
+        };
         try {
           const response = await fetch(
             `https://management.azure.com/providers/Microsoft.ResourceGraph/resources?api-version=2021-03-01`,
@@ -299,14 +340,26 @@ class AdvancedCopy extends Watcher {
                 }
               )
             });
-          if (response.status !== 200) return false;
+          if (response.status !== 200) return {
+            visible: true,
+            available: false,
+            message: 'Not found Bastion host.'
+          };
           const json = await response.json();
           const bastionId = json.data[0].id;
           this.cache[resource[1]] = Object.assign(this.cache[resource[1]] || {}, { bastionId });
         } catch (e) {
-          return false;
+          return {
+            visible: true,
+            available: false,
+            message: 'Failed to query Bastion host.'
+          };
         }
-        return true;
+        return {
+          visible: true,
+          available: true,
+          message: ''
+        };
       }
     }];
 
@@ -435,6 +488,7 @@ class AdvancedCopy extends Watcher {
     fxsBladeDropmenucontent.style.width = '350px';
     this.menus.reduce(async (promise, entry) => {
       await promise;
+
       if (entry.isAvailable && !await entry.isAvailable()) return;
       const button = document.createElement('button');
       button.setAttribute('role', 'menuitem');
@@ -549,24 +603,11 @@ class AdvancedCopy extends Watcher {
     const theme = document.head.className.replace(/.*(fxs-mode-(?:dark|light)+).*/, '$1');
     this.menus.reduce(async (promise, entry) => {
       await promise;
-      if (entry.isAvailable && !await entry.isAvailable()) return;
       const menuItem = document.createElement('div');
       menuItem.setAttribute('role', 'menuitem');
       menuItem.setAttribute('tabindex', '0');
-      menuItem.setAttribute('onmouseover',
-        `const styles=getComputedStyle(document.querySelector('.${styleClassName}'));` +
-        `this.style.background=styles.getPropertyValue('--colorControlBackgroundHover');` +
-        `this.style.color=styles.getPropertyValue('--colorNeutralForeground2Hover');`
-      );
-      menuItem.setAttribute('onmouseout',
-        `const styles=getComputedStyle(document.querySelector('.${styleClassName}'));` +
-        `this.style.background=styles.getPropertyValue('--colorNeutralBackground1');` +
-        `this.style.color=styles.getPropertyValue('--colorNeutralForeground2');`
-      );
-
       menuItem.style.fontSize = '13px';
       menuItem.style.borderRadius = 'var(--borderRadiusMedium)';
-      menuItem.style.color = 'var(--colorNeutralForeground2)';
       menuItem.style.backgroundColor = 'var(--colorNeutralBackground1)';
       menuItem.style.padding = 'var(--spacingVerticalSNudge) var(--spacingVerticalSNudge)';
       menuItem.style.boxSizing = 'border-box';
@@ -576,9 +617,27 @@ class AdvancedCopy extends Watcher {
       const menuItemLabel = document.createElement('span');
       menuItemLabel.classList.add('fui-MenuItem__content');
       menuItemLabel.innerText = entry.title;
-      menuItem.appendChild(menuItemLabel);
 
-      menuItem.addEventListener('click', entry.handler.bind(this));
+      const availability = entry.isAvailable ? await entry.isAvailable() : { visible: true, available: true, message: '' };
+      menuItem.style.display = (this.options.exclusions || []).includes(entry.id) || !availability.visible ? 'none' : 'flex';
+      if (!availability.available) {
+        menuItem.style.color = 'var(--colorNeutralForegroundDisabled)';
+        menuItem.setAttribute('title', availability.message || 'This action is not available.');
+      } else {
+        menuItem.addEventListener('click', entry.handler.bind(this));
+        menuItem.style.color = 'var(--colorNeutralForeground2)';
+        menuItem.setAttribute('onmouseover',
+          `const styles=getComputedStyle(document.querySelector('.${styleClassName}'));` +
+          `this.style.background=styles.getPropertyValue('--colorControlBackgroundHover');` +
+          `this.style.color=styles.getPropertyValue('--colorNeutralForeground2Hover');`
+        );
+        menuItem.setAttribute('onmouseout',
+          `const styles=getComputedStyle(document.querySelector('.${styleClassName}'));` +
+          `this.style.background=styles.getPropertyValue('--colorNeutralBackground1');` +
+          `this.style.color=styles.getPropertyValue('--colorNeutralForeground2');`
+        );
+      }
+      menuItem.appendChild(menuItemLabel);
 
       menuRoot.appendChild(menuItem);
       return Promise.resolve(true);
@@ -1025,8 +1084,8 @@ const storeAccessToken = async () => {
   const SCOPES = ['https://management.core.windows.net//user_impersonation', 'https://management.core.windows.net//.default'];
   const tenantId = localStorage.getItem('SavedDefaultDirectory') || document.querySelectorAll('button.fxs-menu-account')[0].getAttribute('title').split(/\n/)[2].replace(/.*\(([\da-f]{8}(?:-[\da-f]{4}){4}[\da-f]{8})\)/, '$1');
   const key = [
-    ... JSON.parse(sessionStorage.getItem(`msal.1.token.keys.${CLIENT_ID}`) || '{}').accessToken || [],
-    ... JSON.parse(sessionStorage.getItem(`msal.token.keys.${CLIENT_ID}`) || '{}').accessToken || []
+    ...JSON.parse(sessionStorage.getItem(`msal.1.token.keys.${CLIENT_ID}`) || '{}').accessToken || [],
+    ...JSON.parse(sessionStorage.getItem(`msal.token.keys.${CLIENT_ID}`) || '{}').accessToken || []
   ].find(entry => SCOPES.some((scope) => entry.includes(scope) && entry.includes(tenantId)));
   const accessToken = key ? JSON.parse(sessionStorage.getItem(key)).secret : null;
 

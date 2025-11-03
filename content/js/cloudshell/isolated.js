@@ -1,12 +1,9 @@
-window.addEventListener('appInitialized', async () => {
-  console.debug('appInitialized event received');
-  const { keepCloudShellSession } = await chrome.storage.local.get('keepCloudShellSession');
-  window.dispatchEvent(new CustomEvent('appKeepCloudShellSession', { detail: { keepCloudShellSession } }));
+window.addEventListener('cloudShellInitialized', async () => {
+  console.debug('cloudShellInitialized event received');
+  window.dispatchEvent(new CustomEvent('startupFeatureStatus', { detail: await chrome.storage.local.get() }));
 });
 
 chrome.storage.onChanged.addListener(async (changes, area) => {
   if (area !== 'local') return;
-  if (!changes.keepCloudShellSession) return;
-  const newValue = changes.keepCloudShellSession.newValue;
-  window.dispatchEvent(new CustomEvent('appKeepCloudShellSession', { detail: { keepCloudShellSession: newValue } }));
+  window.dispatchEvent(new CustomEvent('updateFeatureStatus', { detail: changes }));
 });

@@ -1,0 +1,224 @@
+<!doctype html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <title>Extension Settings</title>
+  <link rel="stylesheet" href="./css/main.css">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+</head>
+
+<body>
+  <h1><img src="../img/icon128.png" alt="TweakIt for Microsoft Azure Portal" /><span>TweakIt for Microsoft Azure
+      Portal</span></h1>
+
+  <nav class="tabs" role="tablist" aria-label="Options Tabs">
+    <button role="tab" aria-selected="true" id="tab-visual" aria-controls="panel-visual"><img
+        src="./img/svg/tab_appearance.svg" alt="Appearance" />Appearance</button>
+    <button role="tab" aria-selected="false" id="tab-notify" aria-controls="panel-notify"><img
+        src="./img/svg/tab_notification.svg" alt="Notifications / Tab Actions" />Notifications</button>
+    <button role="tab" aria-selected="false" id="tab-resource" aria-controls="panel-resource"><img
+        src="./img/svg/tab_resource.svg" alt="Resource Operations" />Resource Operations</button>
+    <button role="tab" aria-selected="false" id="tab-cloudshell" aria-controls="panel-cloudshell"><img
+        src="./img/svg/tab_shell.svg" alt="CloudShell" />Cloud Shell</button>
+  </nav>
+
+  <!-- Visual / State Indicators -->
+  <div id="panel-visual" role="tabpanel" tabindex="0">
+    <h2>Basic features</h2>
+    <table>
+      <tr>
+        <td>
+          <label class="switch"><input type="checkbox" class="level_0" id="visual_favicon" /><span
+              class="slider"></span><span>Replace
+              favicon with Azure resource's icon</span></label>
+        </td>
+        <td><img src="./img/replace-favicon.png" alt="Replace favicon to Azure resource's icon" /></td>
+      </tr>
+    </table>
+    <h2>Experimental features</h2>
+    <table>
+      <tr>
+        <td>
+          <label class="switch"><input type="checkbox" class="level_0" id="visual_rg_decoration" /><span
+              class="slider"></span><span>Decorate resource group list</span></label>
+        </td>
+        <td><img src="./img/rg-decoration.png" style="width: 50%"></td>
+      </tr>
+    </table>
+  </div>
+
+  <!-- Notifications / Tab actions -->
+  <div id="panel-notify" role="tabpanel" tabindex="0" hidden>
+    <h2>Basic features</h2>
+    <table>
+      <tr>
+        <td>
+          <label class="switch"><input type="checkbox" class="level_0" id="visual_blink" /><span
+              class="slider"></span><span>Blink the favicon during configuration</span></label>
+        </td>
+        <td><img src="./img/blink-favicon.png" /></td>
+      </tr>
+      <tr>
+        <td>
+          <label class="switch"><input type="checkbox" class="level_0" id="notify_desktop" /><span
+              class="slider"></span><span>Show a desktop notification when configuration finishes</span></label>
+        </td>
+        <td><img src="./img/desktop-notfication.png" /></td>
+      </tr>
+    </table>
+    <h2>Experimental features</h2>
+    <table>
+      <tr>
+        <td>
+          <label class="switch"><input type="checkbox" class="level_0" id="notify_activate_tab" /><span
+              class="slider"></span><span>Bring the window to the front when configuration finishes</span></label>
+        </td>
+        <td></td>
+      </tr>
+    </table>
+  </div>
+
+  <!-- Resource operations / Data management -->
+  <div id="panel-resource" role="tabpanel" tabindex="0" hidden>
+    <h2>Basic features</h2>
+    <table>
+      <tr>
+        <td>
+          <label class="switch"><input type="checkbox" class="level_0" id="resource_copy" /><span
+              class="slider"></span><span>Copy
+              resource information</span></label>
+          <div>
+            <label class="switch"><input type="checkbox" id="resource_copy_name" /><span
+                class="slider"></span><span>Resource name</span></label>
+          </div>
+          <div>
+            <label class="switch"><input type="checkbox" id="resource_copy_id" /><span
+                class="slider"></span><span>Resource Id</span></label>
+          </div>
+          <div>
+            <label class="switch"><input type="checkbox" id="resource_copy_azcli" /><span
+                class="slider"></span><span>Resource name and group as Azure CLI options</span></label>
+          </div>
+          <div>
+            <label class="switch"><input type="checkbox" id="resource_copy_azpwsh" /><span
+                class="slider"></span><span>Resource name and group as Azure PowerShell options</span></label>
+          </div>
+          <div>
+            <label class="switch"><input type="checkbox" id="resource_copy_arm_json" /><span
+                class="slider"></span><span>ARM template (JSON)</span></label>
+          </div>
+          <div>
+            <label class="switch"><input type="checkbox" id="resource_copy_arm_bicep" /><span
+                class="slider"></span><span>ARM template (Bicep)</span></label>
+          </div>
+          <div>
+            <label class="switch"><input type="checkbox" id="resource_copy_terraform_azapi" /><span
+                class="slider"></span><span>Terraform (AzApi)</span></label>
+          </div>
+          <div>
+            <label class="switch"><input type="checkbox" id="resource_copy_terraform_azurerm" /><span
+                class="slider"></span><span>Terraform (AzureRM)</span></label>
+          </div>
+          <div>
+            <label class="switch"><input type="checkbox" id="resource_copy_vm_bastion" /><span
+                class="slider"></span><span>VM and Bastion Ids as options for `az network bastion` (*)</span><p>* Only for Azure Virtual Machines</p></label>
+          </div>
+        </td>
+        <td>
+          <p>
+            <img src="./img/copy-resource-info-root.png" />
+          </p>
+          <p>
+            <img src="./img/copy-resource-info-resource-name.png" id="img_resource_copy_name" />
+          </p>
+          <p>
+            <img src="./img/copy-resource-info-resource-id.png" id="img_resource_copy_id" />
+          </p>
+          <p>
+            <img src="./img/copy-resource-info-azcli.png" id="img_resource_copy_azcli" />
+          </p>
+          <p>
+            <img src="./img/copy-resource-info-azpwsh.png" id="img_resource_copy_azpwsh" />
+          </p>
+          <p>
+            <img src="./img/copy-resource-info-arm-json.png" id="img_resource_copy_arm_json" />
+          </p>
+          <p>
+            <img src="./img/copy-resource-info-arm-bicep.png" id="img_resource_copy_arm_bicep" />
+          </p>
+          <p>
+            <img src="./img/copy-resource-info-terraform-azapi.png" id="img_resource_copy_terraform_azapi" />
+          </p>
+          <p>
+            <img src="./img/copy-resource-info-terraform-azurerm.png" id="img_resource_copy_terraform_azurerm" />
+          </p>
+          <p>
+            <img src="./img/copy-resource-info-vmbastion.png" id="img_resource_copy_vm_bastion" />
+          </p>
+        </td>
+      </tr>
+    </table>
+    <h2>Experimental features</h2>
+    <table>
+      <tr>
+        <td>
+          <label class="switch"><input type="checkbox" class="level_0" id="resource_save_filter" /><span
+              class="slider"></span><span>Restore the filter string for each list view</span></label>
+        </td>
+        <td><img src="./img/restore-filter-string.png" alt="Restore filter string on each list view" /></td>
+      </tr>
+    </table>
+  </div>
+
+  <!-- CloudShell / Developer features -->
+  <div id="panel-cloudshell" role="tabpanel" tabindex="0" hidden>
+    <h2>Basic features</h2>
+    <table>
+      <tr>
+        <td>
+          <label class="switch"><input type="checkbox" class="level_0" id="cloudshell_extend_session" /><span
+              class="slider"></span><span>Keep the Cloud Shell session alive for longer than 20 minutes</span></label>
+        </td>
+        <td></td>
+      </tr>
+    </table>
+    <h2>Experimental features</h2>
+    <table>
+      <tr>
+        <td>
+          <label class="switch"><input type="checkbox" class="level_0" id="cloudshell_enable_startup" /><span
+              class="slider"></span><span>Custom startup scripts (Bash only)</span></label>
+          <div>
+            <label class="switch"><input type="checkbox" id="cloudshell_enable_startup_visible" /><span
+                class="slider"></span><span>Show executed commands</span></label>
+          </div>
+          <div>
+            <label class="switch"><input type="checkbox" id="cloudshell_enable_startup_history" /><span
+                class="slider"></span><span>Save executed commands in history</span></label>
+          </div>
+        </td>
+        <td><textarea id="cloudshell_startup_script" rows="6" style="width:100%;"
+            placeholder="# Input script here. i.e. alias ll=\"ls -la\", etc"></textarea></td>
+      </tr>
+      <tr>
+        <td>
+          <label class="switch"><input type="checkbox" class="level_0" id="cloudshell_replace_code" /><span
+              class="slider"></span><span>Open `insiders.vscode.dev` with the `code` command (Bash only)</span>
+        </td>
+        <td></td>
+      </tr>
+      <!-- <tr>
+        <td>
+          <label class="switch"><input type="checkbox" class="level_0" id="cloudshell_enable_docker" /><span
+              class="slider"></span><span>Execute Docker daemon</span>
+            <p>* Only for ephemeral session (i.e. without mounting storage account). </p>
+            <p>** This feature MUST NOT be turned off before opening <a href="https://vscode.dev/azure" target="_blank">https://vscode.dev/azure</a>.</p></label>
+        </td>
+        <td></td>
+      </tr> -->
+    </table>
+  <script src="./js/main.js"></script>
+</body>
+
+</html>

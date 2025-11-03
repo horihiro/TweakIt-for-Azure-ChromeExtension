@@ -271,3 +271,17 @@ chrome.contextMenus.onClicked.addListener(async (info, tab) => {
   }
 
 });
+
+// Open options page when user clicks the extension action (icon).
+// This listener will only fire when `action.default_popup` is not set in manifest.
+chrome.action.onClicked.addListener(async () => {
+  try {
+    if (chrome.runtime.openOptionsPage) {
+      await chrome.runtime.openOptionsPage();
+    } else {
+      await chrome.tabs.create({ url: chrome.runtime.getURL('options/main.html') });
+    }
+  } catch (e) {
+    console.debug('Failed to open options page', e);
+  }
+});
