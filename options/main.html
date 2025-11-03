@@ -31,7 +31,7 @@
         <td>
           <label class="switch"><input type="checkbox" class="level_0" id="visual_favicon" /><span
               class="slider"></span><span>Replace
-              favicon to Azure resource's icon</span></label>
+              favicon with Azure resource's icon</span></label>
         </td>
         <td><img src="./img/replace-favicon.png" alt="Replace favicon to Azure resource's icon" /></td>
       </tr>
@@ -55,16 +55,14 @@
       <tr>
         <td>
           <label class="switch"><input type="checkbox" class="level_0" id="visual_blink" /><span
-              class="slider"></span><span>Blink
-              favicon during configuration</span></label>
+              class="slider"></span><span>Blink the favicon during configuration</span></label>
         </td>
         <td><img src="./img/blink-favicon.png" /></td>
       </tr>
       <tr>
         <td>
           <label class="switch"><input type="checkbox" class="level_0" id="notify_desktop" /><span
-              class="slider"></span><span>Notify to
-              desktop when finishing configuration</span></label>
+              class="slider"></span><span>Show a desktop notification when configuration finishes</span></label>
         </td>
         <td><img src="./img/desktop-notfication.png" /></td>
       </tr>
@@ -74,7 +72,7 @@
       <tr>
         <td>
           <label class="switch"><input type="checkbox" class="level_0" id="notify_activate_tab" /><span
-              class="slider"></span><span>Bring the window to the front when finishing configuration</span></label>
+              class="slider"></span><span>Bring the window to the front when configuration finishes</span></label>
         </td>
         <td></td>
       </tr>
@@ -100,11 +98,11 @@
           </div>
           <div>
             <label class="switch"><input type="checkbox" id="resource_copy_azcli" /><span
-                class="slider"></span><span>Resource name and group as Azure CLI option</span></label>
+                class="slider"></span><span>Resource name and group as Azure CLI options</span></label>
           </div>
           <div>
             <label class="switch"><input type="checkbox" id="resource_copy_azpwsh" /><span
-                class="slider"></span><span>Resource name and group as Azure PowerShell option</span></label>
+                class="slider"></span><span>Resource name and group as Azure PowerShell options</span></label>
           </div>
           <div>
             <label class="switch"><input type="checkbox" id="resource_copy_arm_json" /><span
@@ -124,7 +122,7 @@
           </div>
           <div>
             <label class="switch"><input type="checkbox" id="resource_copy_vm_bastion" /><span
-                class="slider"></span><span>VM and Bastion Ids as `az network bastion` option(*)</span><p>* Only for Azure Virtual Machines</p></label>
+                class="slider"></span><span>VM and Bastion Ids as options for `az network bastion` (*)</span><p>* Only for Azure Virtual Machines</p></label>
           </div>
         </td>
         <td>
@@ -166,7 +164,7 @@
       <tr>
         <td>
           <label class="switch"><input type="checkbox" class="level_0" id="resource_save_filter" /><span
-              class="slider"></span><span>Restore filter string on each list view</span></label>
+              class="slider"></span><span>Restore the filter string for each list view</span></label>
         </td>
         <td><img src="./img/restore-filter-string.png" alt="Restore filter string on each list view" /></td>
       </tr>
@@ -180,7 +178,7 @@
       <tr>
         <td>
           <label class="switch"><input type="checkbox" class="level_0" id="cloudshell_extend_session" /><span
-              class="slider"></span><span>Keep Cloud Shell session alive more than 20 minutes</span></label>
+              class="slider"></span><span>Keep the Cloud Shell session alive for longer than 20 minutes</span></label>
         </td>
         <td></td>
       </tr>
@@ -190,14 +188,14 @@
       <tr>
         <td>
           <label class="switch"><input type="checkbox" class="level_0" id="cloudshell_enable_startup" /><span
-              class="slider"></span><span>Custom startup script (bash only)</span></label>
+              class="slider"></span><span>Custom startup script (Bash only)</span></label>
           <div>
             <label class="switch"><input type="checkbox" id="cloudshell_enable_startup_visible" /><span
-                class="slider"></span><span>Show executed command</span></label>
+                class="slider"></span><span>Show executed commands</span></label>
           </div>
           <div>
             <label class="switch"><input type="checkbox" id="cloudshell_enable_startup_history" /><span
-                class="slider"></span><span>Record executed command</span></label>
+                class="slider"></span><span>Save executed commands in history</span></label>
           </div>
         </td>
         <td><textarea id="cloudshell_startup_script" rows="6" style="width:100%;"
@@ -206,7 +204,7 @@
       <tr>
         <td>
           <label class="switch"><input type="checkbox" class="level_0" id="cloudshell_replace_code" /><span
-              class="slider"></span><span>Open `insiders.vscode.dev` by `code` command (bash only)</span>
+              class="slider"></span><span>Open `insiders.vscode.dev` with the `code` command (Bash only)</span>
         </td>
         <td></td>
       </tr>
@@ -220,8 +218,6 @@
         <td></td>
       </tr> -->
     </table>
-  </div>
-
   <script src="./js/main.js"></script>
 </body>
 
