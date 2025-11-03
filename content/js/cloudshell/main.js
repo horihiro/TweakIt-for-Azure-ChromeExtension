@@ -296,7 +296,7 @@ window.addEventListener('updateFeatureStatus', async (e) => {
   }
 
   keepCloudShellSession.stop();
-  e.detail.keepCloudShellSession?.status && keepCloudShellSession.start(sockets.find(s => !s.url.endsWith('/control')));
+  globalSettings.tweakitOptions?.keepCloudShellSession?.status && keepCloudShellSession.start(sockets.find(s => !s.url.endsWith('/control')));
 
 });
 
