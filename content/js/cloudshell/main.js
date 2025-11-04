@@ -183,7 +183,9 @@ const socketMessageHandler = (e) => {
       return setTimeout(() => {
         promptTimeout = null;
         promptDetecting = false;
-        if (globalSettings.shellPrompt === currentPrompt) return;
+        if (!currentPrompt
+          || new RegExp(`^${PROMPT_LEADING_PATTERN[globalSettings.shellType]}> `).test(currentPrompt)
+          || globalSettings.shellPrompt === currentPrompt) return;
         globalSettings.shellPrompt = currentPrompt;
         window.dispatchEvent(new CustomEvent('shellPromptUpdated', { detail: { shellPrompt: globalSettings.shellPrompt } }));
       }, 10);
@@ -207,6 +209,11 @@ const socketMessageHandler = (e) => {
 
 window.addEventListener('shellPromptUpdated', async (e) => {
   console.debug('shellPromptUpdated event received:', e.detail);
+  const TWEAKIT_INJECTED = await commandExecutor.execute('echo $TWEAKIT_INJECTED', globalSettings.shellPrompt, { background: true, history: false });
+  if (TWEAKIT_INJECTED.trim() === '1') {
+    console.debug('TweakIt already injected in the shell session. Skipping startup commands execution.');
+    return;
+  }
   init();
 });
 
@@ -214,6 +221,7 @@ window.addEventListener('startupFeatureStatus', async (e) => {
   console.debug('startupFeatureStatus event received:', e.detail);
   window.dispatchEvent(new CustomEvent('updateFeatureStatus', { detail: e.detail }));
   globalSettings.tweakitOptions = { ...e.detail };
+
   const startupCommands = defaultStartupCommands.map(options => {
     return {
       command: options.command[globalSettings.shellType],
@@ -242,42 +250,55 @@ window.addEventListener('startupFeatureStatus', async (e) => {
         background: e.detail.executeStartupScript.options.disabledOptions?.includes('cloudshell_enable_startup_visible'),
         history: !e.detail.executeStartupScript.options.disabledOptions?.includes('cloudshell_enable_startup_history'),
       });
-
-    globalSettings.shellType === 'bash' && e.detail.executeDockerDaemon?.status &&
-      startupCommands.push({
-        command: 'startupDocker() { test ${DOCKER_HOST} || : && { ps aux | grep "[r]ootlesskit" > /dev/null && : || { BIN_DIR=${HOME}/.local/bin;TARGET_FILE=${BIN_DIR}/start-rootless-docker.sh;BACKUP_FILE=${TARGET_FILE}-$(date "+%Y-%m-%b-%d-%H-%M-%S");cp ${TARGET_FILE} ${BACKUP_FILE};sed -E \'s/^(CONDITIONAL_FLAGS="--iptables=false)[^"]+"/\\1"/\' ${BACKUP_FILE} > ${TARGET_FILE};chmod +x ${TARGET_FILE};curl -s "https://$SOCKET_HOST/$SOCKET_PATH/tunnel" -X POST -H "Content-Type: application/json" -H "Authorization: Bearer $(az account get-access-token --query "accessToken" --output tsv)" -d "{\\"token\\": \\"$(az account get-access-token --query "accessToken" --output tsv --scope 46da2f7e-b5ef-422a-88d4-2a7f9de6a0b2/all)\\", \\"folderPath\\": \\"\\", \\"tunnelName\\": \\"tweakit\\", \\"extensions\\": []}">/dev/null;VSCODE_PID=$(ps aux | grep "[v]scode tunnel" | tail -n 1 | awk \'{print $2}\'); test ${VSCODE_PID};kill ${VSCODE_PID};vscode tunnel prune > /dev/null;sleep 5;DOCKER_ENGINE_VERSION=$(docker version | grep "Server" -A 2 | grep "Version" | awk \'{print $2}\');test ${DOCKER_ENGINE_VERSION} || : && { curl -sL "https://download.docker.com/linux/static/stable/x86_64/docker-${DOCKER_ENGINE_VERSION}.tgz" -o ${BIN_DIR}/docker-${DOCKER_ENGINE_VERSION}.tgz;tar -xzvf ${BIN_DIR}/docker-${DOCKER_ENGINE_VERSION}.tgz -O docker/docker-proxy > ${BIN_DIR}/docker-proxy 2>/dev/null;chmod +x ${BIN_DIR}/docker-proxy; rm ${BIN_DIR}/docker-${DOCKER_ENGINE_VERSION}.tgz; }; }; }; };',
-        background: true,
-        history: false,
-      }, {
-        command: 'startupDocker 2>&1 > /dev/null &',
-        background: true,
-        history: false,
-      }, {
-        command: 'unset -f startupDocker',
-        background: true,
-        history: false,
-      });
-
     // Execute all startup commands
     window.term.write(`${ASCII.ESC}[1K\r${ASCII.ESC}[48;5;31m[TWEAKIT] Executing Custom startup scripts...`);
+    const dotfilecontents = [];
     await startupCommands.reduce(async (p, options) => {
       await p;
-      return commandExecutor.execute(
-        options.command,
-        globalSettings.shellPrompt,
-        {
-          background: options.background,
-          history: options.history
-        }
-      );
+      if (!options.background || options.history) {
+        return commandExecutor.execute(
+          options.command,
+          globalSettings.shellPrompt,
+          {
+            background: options.background,
+            history: options.history
+          }
+        );
+      }
+      dotfilecontents.push(options.command);
+      return Promise.resolve();
     }, Promise.resolve());
     globalSettings.user = (await commandExecutor.execute('whoami', globalSettings.shellPrompt, { background: true, history: false })).trim();
-    window.term.write(` Finished.${ASCII.ESC}[0m\r\n`);
-    window.term.write(globalSettings.shellPrompt);
+    if (dotfilecontents.length > 0) {
+      await commandExecutor.execute([
+        'rm ${HOME}/.tweakit 2>/dev/null;',
+        'export DATETIME=$(date "+%Y-%m-%d %H:%M:%S");',
+        `echo "# TweakIt for Azure Cloud Shell - Auto generated on \${DATETIME} by ${globalSettings.user}" > \${HOME}/.tweakit;`,
+        ...dotfilecontents.join('\n').split('\n').map(line => `echo '${line.replace(/'/g, `'\\''`)}' >> \${HOME}/.tweakit;`),
+        'grep -v \'source ${HOME}/.tweakit\' "${HOME}/.bashrc" > "${HOME}/.bashrc-${DATETIME}.bak";',
+        'cp ${HOME}/.bashrc-${DATETIME}.bak ${HOME}/.bashrc;',
+        'unset DATETIME;',
+        'echo "source ${HOME}/.tweakit" >>  ${HOME}/.bashrc;',
+        'source ${HOME}/.tweakit;'
+      ].join(''), globalSettings.shellPrompt, { background: true, history: false });
+    }
+
+    globalSettings.shellType === 'bash' && e.detail.executeDockerDaemon?.status &&
+      await [
+        'startupDocker() { test ${DOCKER_HOST} || : && { ps aux | grep "[r]ootlesskit" > /dev/null && : || { BIN_DIR=${HOME}/.local/bin;TARGET_FILE=${BIN_DIR}/start-rootless-docker.sh;BACKUP_FILE=${TARGET_FILE}-$(date "+%Y-%m-%d-%H-%M-%S");cp ${TARGET_FILE} ${BACKUP_FILE};sed -E \'s/^(CONDITIONAL_FLAGS="--iptables=false)[^"]+"/\\1"/\' ${BACKUP_FILE} > ${TARGET_FILE};chmod +x ${TARGET_FILE};curl -s "https://$SOCKET_HOST/$SOCKET_PATH/tunnel" -X POST -H "Content-Type: application/json" -H "Authorization: Bearer $(az account get-access-token --query "accessToken" --output tsv)" -d "{\\"token\\": \\"$(az account get-access-token --query "accessToken" --output tsv --scope 46da2f7e-b5ef-422a-88d4-2a7f9de6a0b2/all)\\", \\"folderPath\\": \\"\\", \\"tunnelName\\": \\"tweakit\\", \\"extensions\\": []}">/dev/null;VSCODE_PID=$(ps aux | grep "[v]scode tunnel" | tail -n 1 | awk \'{print $2}\'); test ${VSCODE_PID};kill ${VSCODE_PID};vscode tunnel prune > /dev/null;sleep 5;DOCKER_ENGINE_VERSION=$(docker version | grep "Server" -A 2 | grep "Version" | awk \'{print $2}\');test ${DOCKER_ENGINE_VERSION} || : && { curl -sL "https://download.docker.com/linux/static/stable/x86_64/docker-${DOCKER_ENGINE_VERSION}.tgz" -o ${BIN_DIR}/docker-${DOCKER_ENGINE_VERSION}.tgz;tar -xzvf ${BIN_DIR}/docker-${DOCKER_ENGINE_VERSION}.tgz -O docker/docker-proxy > ${BIN_DIR}/docker-proxy 2>/dev/null;chmod +x ${BIN_DIR}/docker-proxy; rm ${BIN_DIR}/docker-${DOCKER_ENGINE_VERSION}.tgz; }; }; }; };',
+        'startupDocker 2>&1 > /dev/null &',
+        'unset -f startupDocker',
+      ].reduce(async (p, cmd) => {
+        await p;
+        return commandExecutor.execute(cmd, globalSettings.shellPrompt, { background: true, history: false });
+      }, Promise.resolve());
+
+      window.term.write(` Finished.${ASCII.ESC}[0m\r\n`);
+      window.term.write(globalSettings.shellPrompt);
   }
   catch (err) {
-    console.error('Error executing startup commands:', err);
-  }
+  console.error('Error executing startup commands:', err);
+}
 });
 
 window.addEventListener('updateFeatureStatus', async (e) => {
