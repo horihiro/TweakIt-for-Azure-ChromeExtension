@@ -7,9 +7,7 @@
   "permissions": [
     "storage",
     "tabs",
-    "contextMenus"
-  ],
-  "optional_permissions": [
+    "contextMenus",
     "notifications"
   ],
   "background": {
