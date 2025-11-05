@@ -117,7 +117,7 @@ class ResourceGroupDecorator extends Watcher {
         const [_, subscriptionId, resourceGroup] = rgRow.querySelector('a')?.href?.toLowerCase()?.match(/([\da-f]{8}(?:-[\da-f]{4}){4}[\da-f]{8})\/resourcegroups\/([^\/]+)$/) || [];
         if (subscriptionId && resourceGroup) {
           const count = json.data.find((item) => item.subscriptionId === subscriptionId && item.resourceGroup === resourceGroup)?.count_ || 0;
-          rgRow.classList.value = `appls-resource-count-${String(count).padStart(3, '0')} ${rgRow.classList.value.replace(/appls-resource-count-\d{3}/g, '').trim()}`;
+          rgRow.classList.value = `tweakit-resource-count-${String(count).padStart(3, '0')} ${rgRow.classList.value.replace(/tweakit-resource-count-\d{3}/g, '').trim()}`;
           rgRow.title = count == 0 ? 'no resource' : (count == 1 ? '1 resource' : `${count} resources`);
         }
       });
@@ -145,7 +145,7 @@ class ResourceGroupDecorator extends Watcher {
     rgRows.forEach((rgRow) => {
       const [_, subscriptionId, resourceGroup] = rgRow.querySelector('a')?.href?.toLowerCase()?.match(/([\da-f]{8}(?:-[\da-f]{4}){4}[\da-f]{8})\/resourcegroups\/([^\\]+)$/) || [];
       if (subscriptionId && resourceGroup) {
-        rgRow.classList.value = rgRow.classList.value.replace(/appls-resource-count-\d{3}/g, '').trim();
+        rgRow.classList.value = rgRow.classList.value.replace(/tweakit-resource-count-\d{3}/g, '').trim();
         delete rgRow.title;
       }
     });
