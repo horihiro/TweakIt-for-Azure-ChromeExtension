@@ -1,22 +1,34 @@
 /* Azure-blue themed styles for options tabs */
 :root {
   /* Dark theme: Azure-accented dark surface */
-  --accent: #2B8CFF; /* bright Azure blue for accents */
-  --accent-700: #005EA6; /* deeper Azure-like accent */
-  --accent: #0078D4; /* Microsoft/Azure blue for accents */
-  --accent-100: #C7E6FF; /* tint used for highlights */
-  --surface: #0B1220; /* dark panel surface */
-  --page-bg: #071023; /* dark page background */
+  --accent: #2B8CFF;
+  /* bright Azure blue for accents */
+  --accent-700: #005EA6;
+  /* deeper Azure-like accent */
+  --accent: #0078D4;
+  /* Microsoft/Azure blue for accents */
+  --accent-100: #C7E6FF;
+  /* tint used for highlights */
+  --surface: #0B1220;
+  /* dark panel surface */
+  --page-bg: #071023;
+  /* dark page background */
   /* brighter variants for tabs/panels (page background remains unchanged) - Azure-themed */
   /* slightly darker variants for tabs/panels to reduce shine while keeping Azure tint */
-  --surface-light: #0b2736; /* darker bluish surface */
-  --surface-lighter: #0f4a8c; /* darker Azure-tinted panel/tab background */
-  --accent-cta: #00A4FF; /* high-contrast Azure CTA for controls */
-  --text: #E6F7FF; /* light text */
+  --surface-light: #0b2736;
+  /* darker bluish surface */
+  --surface-lighter: #0f4a8c;
+  /* darker Azure-tinted panel/tab background */
+  --accent-cta: #00A4FF;
+  /* high-contrast Azure CTA for controls */
+  --text: #E6F7FF;
+  /* light text */
   /* text rgb for rgba usage (r,g,b without alpha) */
-  --text-rgb: 230,247,255;
-  --muted: #9FC9FF77; /* lighter muted text for secondary content */
-  --border: rgba(230,247,255,0.6); /* subtle border on dark surface */
+  --text-rgb: 230, 247, 255;
+  --muted: #9FC9FF77;
+  /* lighter muted text for secondary content */
+  --border: rgba(230, 247, 255, 0.6);
+  /* subtle border on dark surface */
   --border-width: 2px;
   /* use this to control overlap amount */
   --font-size-page-title: 24px;
@@ -32,7 +44,7 @@ body {
   background: var(--page-bg);
 }
 
-h1 span{
+h1 span {
   font-size: var(--font-size-page-title);
 }
 
@@ -56,7 +68,8 @@ h3 {
 .tabs>[role="tab"] {
   padding: 8px 12px;
   border: var(--border-width) solid rgba(var(--text-rgb), 0.1);
-  background: rgba(var(--text-rgb), 0.08); /* slightly darker translucent tab */
+  background: rgba(var(--text-rgb), 0.08);
+  /* slightly darker translucent tab */
   border-radius: 8px;
   cursor: pointer;
   color: var(--text);
@@ -147,36 +160,37 @@ h3 {
 .switch {
   cursor: pointer;
   font-size: 1.2em;
-}
 
-.slider {
-  position: relative;
-  display: inline-block;
-  width: var(--slider-width);
-  height: 20px;
-  background-color: rgba(var(--text-rgb), 0.12);
-  border-radius: 20px;
-  transition: background-color 0.3s;
-  margin-bottom: 7px;
-  margin-top: 3px;
-  margin-right: var(--slider-margin-right);
-  vertical-align: middle;
-}
+  .slider {
+    position: relative;
+    display: inline-block;
+    width: var(--slider-width);
+    height: 20px;
+    background-color: rgba(var(--text-rgb), 0.12);
+    border-radius: 20px;
+    transition: background-color 0.3s;
+    margin-bottom: 7px;
+    margin-top: 3px;
+    margin-right: var(--slider-margin-right);
+    vertical-align: middle;
+  }
 
-.slider::before {
-  position: absolute;
-  content: "";
-  width: 18px;
-  height: 18px;
-  border-radius: 50%;
-  background-color: white;
-  top: 1px;
-  left: 1px;
+  .slider::before {
+    position: absolute;
+    content: "";
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background-color: white;
+    top: 1px;
+    left: 1px;
+  }
+
 }
 
 input:checked:not(:disabled)+.slider {
   background-color: var(--accent-cta);
-  box-shadow: 0 0 0 2px rgba(10,36,60,0.25) inset;
+  box-shadow: 0 0 0 2px rgba(10, 36, 60, 0.25) inset;
 }
 
 input~* {
@@ -189,43 +203,9 @@ input:checked:not(:disabled)~* {
   /* font-weight: 700; */
 }
 
-tr:has(input) {
-  color: var(--muted);
-}
-
-tr:has(input.level_0) img {
-  filter: brightness(60%);
-}
-
-tr:has(input.level_0) textarea {
-  filter: brightness(60%);
-  cursor: not-allowed;
-}
-
-tr:has(input.level_0) div>label {
-  cursor: not-allowed;
-}
-
-tr:has(input.level_0:checked) {
-  color: var(--text);
-}
-
-tr:has(input.level_0:checked) img {
-  filter: brightness(100%);
-}
-
-tr:has(input.level_0:checked) textarea {
-  filter: brightness(100%);
-  cursor: text;
-}
-
-tr:has(input.level_0:checked) div>label {
-  cursor: pointer;
-}
-
 input:checked+.slider::before {
   transform: translateX(20px);
-  box-shadow: 0 2px 6px rgba(0,0,0,0.35);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.35);
 }
 
 input[type="checkbox"] {
@@ -233,29 +213,101 @@ input[type="checkbox"] {
 }
 
 table {
-  width:100%;
-  border-collapse:collapse;
+  width: 100%;
+  border-collapse: collapse;
+
+  tr:has(input) {
+    color: var(--muted);
+  }
+
+  tr:has(input.level_0) img {
+    filter: brightness(60%);
+  }
+
+  tr:has(input.level_0) textarea {
+    filter: brightness(60%);
+    cursor: not-allowed;
+  }
+
+  tr:has(input.level_0) div>label {
+    cursor: not-allowed;
+  }
+
+  tr:has(input.level_0:checked) {
+    color: var(--text);
+  }
+
+  tr:has(input.level_0:checked) img {
+    filter: brightness(100%);
+  }
+
+  tr:has(input.level_0:checked) textarea {
+    filter: brightness(100%);
+    cursor: text;
+  }
+
+  tr:has(input.level_0:checked) div>label {
+    cursor: pointer;
+  }
+
+  td {
+    vertical-align: top;
+
+    p {
+      margin: -4px 0;
+    }
+  }
+
+  td:nth-child(1) {
+    width: 30%;
+    vertical-align: top;
+  }
+
+  td:nth-child(2) {
+    width: 70%;
+    vertical-align: top;
+  }
+
+  label>p,
+  td div {
+    margin-left: calc(var(--slider-width) + var(--slider-margin-right));
+  }
 }
 
-table td {
-  vertical-align: top;
+pre {
+  background-color: white;
+  border: var(--border-width) solid #ccc;
+  padding: 15px;
+  font-family: "Courier New", Courier, monospace;
+  line-height: 1.4;
+  border-radius: 4px;
+  color: #333;
+
+  code {
+    font-family: inherit;
+  }
+
+  span.comment {
+    color: #6A9955;
+  }
+
+  span.selector {
+    color: brown
+  }
+
+  span.property {
+    color: red;
+  }
+
+  span.value {
+    color: darkcyan;
+  }
 }
 
-table td:nth-child(1) {
-  width: 30%;
-  vertical-align: top;
+a {
+  color: var(--accent-100);
+  text-decoration: underline;
 }
 
-table td:nth-child(2) {
-  width: 70%;
-  vertical-align: top;
-}
-
-td p {
-  margin: -4px 0;
-}
-
-label > p,
-td div {
-  margin-left: calc(var(--slider-width) + var(--slider-margin-right));
-}
+a:hover {
+  color: var(--accent-cta);
