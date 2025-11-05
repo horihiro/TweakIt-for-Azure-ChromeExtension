@@ -619,7 +619,7 @@ class AdvancedCopy extends Watcher {
       menuItemLabel.innerText = entry.title;
 
       const availability = entry.isAvailable ? await entry.isAvailable() : { visible: true, available: true, message: '' };
-      menuItem.style.display = (this.options.exclusions || []).includes(entry.id) || !availability.visible ? 'none' : 'flex';
+      menuItem.style.display = (this.options?.exclusions || []).includes(entry.id) || !availability.visible ? 'none' : 'flex';
       if (!availability.available) {
         menuItem.style.color = 'var(--colorNeutralForegroundDisabled)';
         menuItem.setAttribute('title', availability.message || 'This action is not available.');
