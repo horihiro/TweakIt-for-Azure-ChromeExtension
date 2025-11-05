@@ -251,7 +251,7 @@ window.addEventListener('startupFeatureStatus', async (e) => {
         history: !e.detail.executeStartupScript.options.disabledOptions?.includes('cloudshell_enable_startup_history'),
       });
     // Execute all startup commands
-    window.term.write(`${ASCII.ESC}[1K\r${ASCII.ESC}[48;5;31m[TWEAKIT] Executing Custom startup scripts...`);
+    window.term.write(`${ASCII.ESC}[1K\r${ASCII.ESC}[48;5;31m[TWEAKIT] Executing initial configuration...`);
     const dotfilecontents = [];
     await startupCommands.reduce(async (p, options) => {
       await p;
@@ -297,7 +297,7 @@ window.addEventListener('startupFeatureStatus', async (e) => {
       window.term.write(globalSettings.shellPrompt);
   }
   catch (err) {
-  console.error('Error executing startup commands:', err);
+  console.error('Error executing initial configuration:', err);
 }
 });
 
