@@ -1,5 +1,12 @@
 # Release History
-## [1.1.0](https://github.com/horihiro/TweakIt-for-Azure-ChromeExtension/releases/tag/1.1.0)
+## [1.1.1](https://github.com/horihiro/TweakIt-for-Azure-ChromeExtension/releases/tag/1.1.1)
+### Improve feature(s)
+  - Options / UI: add default css for resource group list decoration
+
+### Bug Fix(es)
+  - Cloud Shell: Improve logic for custom startup scripts
+
+## [1.1.0](https://github.com/horihiro/TweakIt-for-Azure-ChromeExtension/releases/tag/1.1.0)  (Unreleased on Chrome Web Store)
 ### New feature(s)
   - Cloud Shell: support executing custom startup scripts (bash only) with options to show executed commands and record to command history.
   - Cloud Shell: add `code` command helper to open files in `insiders.vscode.dev` (bash only).

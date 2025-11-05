@@ -12,7 +12,7 @@ jobs:
       - name: checkout
         uses: actions/checkout@v4
       - name: zip release
-        run: zip -r release.zip background content img popup util CREDITS.txt LICENSE manifest.json NOTICE.md README.md CHANGELOG.md
+        run: zip -r release.zip background content img options util CREDITS.txt LICENSE manifest.json NOTICE.md README.md CHANGELOG.md
       - name: Upload release attachment
         uses: softprops/action-gh-release@v1
         with:

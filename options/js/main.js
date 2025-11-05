@@ -30,11 +30,11 @@ document.addEventListener('DOMContentLoaded', () => {
   // restore last active tab
   if (window.chrome && chrome.storage && chrome.storage.local) {
     chrome.storage.local.get(storageKey, (items) => {
-      const tabId = items && items[storageKey] ? items[storageKey] : 'tab-basic';
+      const tabId = items && items[storageKey] ? items[storageKey] : 'tab-visual';
       setActiveTab(tabId);
     });
   } else {
-    setActiveTab('tab-basic');
+    setActiveTab('tab-visual');
   }
 
   // Example: simple option save/restore
