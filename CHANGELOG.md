@@ -1,4 +1,8 @@
 # Release History
+## [1.1.2](https://github.com/horihiro/TweakIt-for-Azure-ChromeExtension/releases/tag/1.1.2)
+### New feature(s)
+  - Cloud Shell: support opening Cloud Shell in a new tab
+
 ## [1.1.1](https://github.com/horihiro/TweakIt-for-Azure-ChromeExtension/releases/tag/1.1.1)
 ### Improve feature(s)
   - Options / UI: add default css for resource group list decoration
