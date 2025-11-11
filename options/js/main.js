@@ -51,6 +51,7 @@ document.addEventListener('DOMContentLoaded', () => {
     filterRestorer: document.getElementById('resource_save_filter'),
 
     keepCloudShellSession: document.getElementById('cloudshell_extend_session'),
+    cloudShellOpener: document.getElementById('cloudshell_new_tab'),
     executeStartupScript: document.getElementById('cloudshell_enable_startup'),
     executeDockerDaemon: document.getElementById('cloudshell_enable_docker'),
     replaceCodeCommand: document.getElementById('cloudshell_replace_code'),

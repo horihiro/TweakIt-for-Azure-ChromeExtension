@@ -16,6 +16,45 @@ class Watcher {
   }
 }
 
+class CloudShellOpener extends Watcher {
+  constructor() {
+    super();
+    this.observer = new MutationObserver(this.detectTargetElement.bind(this));
+    this.targetElement = null;
+    this.csWindow = null;
+    this.clickHandler = (function (event) {
+      if (!window.opener && document.querySelector('#consoleFrameId') && !document.querySelector('.fxs-console').classList.contains('fxs-display-none')) return;
+      event.stopPropagation();
+      event.preventDefault();
+      this.openCloudShell();
+    }).bind(this);
+  }
+
+  openCloudShell() {
+    const cloudShellUrl = 'https://portal.azure.com/#cloudshell/';
+    window.csPopup = this.csWindow = window.open(cloudShellUrl, 'csInNewTab');
+  }
+
+  detectTargetElement() {
+    const targetElements = [...document.querySelectorAll('[title="Cloud Shell"][aria-label="Cloud Shell"]')];
+    if (targetElements.length === 0 || this.targetElement) return;
+    this.targetElement = targetElements[0];
+    this.targetElement.addEventListener('click', this.clickHandler, { capture: true });
+  }
+
+  startWatching(options) {
+    this.options = options;
+    this.detectTargetElement();
+    this.observer.observe(document, { childList: true, subtree: true });
+  }
+
+  stopWatching() {
+    super.stopWatching();
+    this.targetElement && this.targetElement.removeEventListener('click', this.clickHandler, { capture: true });
+    this.targetElement = null
+  }
+}
+
 // class VisibilityRestorer extends Watcher {
 //   constructor() {
 //     super();
@@ -1103,6 +1142,7 @@ const storeAccessToken = async () => {
     _watchers['advancedCopy'] = new AdvancedCopy();
     _watchers['filterRestorer'] = new FilterRestorer();
     _watchers['contextMenuUpdater'] = new ContextMenuUpdater();
+    _watchers['cloudShellOpener'] = new CloudShellOpener();
     // _watchers['visibilityRestorer'] = new VisibilityRestorer();
 
     const init = async (changes) => {
@@ -1112,6 +1152,7 @@ const storeAccessToken = async () => {
       })(changes, _watchers);
 
       watcherStatus['contextMenuUpdater'] = { status: true };
+      // watcherStatus['cloudShellOpener'] = { status: true };
       Object.keys(watcherStatus).forEach(w => {
         if (!watcherStatus[w] || !_watchers[w]) return;
         if (watcherStatus[w].status) _watchers[w].startWatching(watcherStatus[w].options);
