@@ -3,6 +3,9 @@
 ### New feature(s)
   - Cloud Shell: support opening Cloud Shell in a new tab
 
+### Bug Fix(es)
+  - Advanced Copy: copying resource ids for sub-resources
+
 ## [1.1.1](https://github.com/horihiro/TweakIt-for-Azure-ChromeExtension/releases/tag/1.1.1)
 ### Improve feature(s)
   - Options / UI: add default css for resource group list decoration
