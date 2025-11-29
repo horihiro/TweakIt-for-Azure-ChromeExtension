@@ -55,50 +55,6 @@ class CloudShellOpener extends Watcher {
   }
 }
 
-// class VisibilityRestorer extends Watcher {
-//   constructor() {
-//     super();
-//     this.observer = new MutationObserver(this.detectTargetElement.bind(this));
-//     this.inputMap = {};
-//     this.propName = 'resourceVisibility';
-//     this.SELECTOR_TARGET_ELEMENT = 'section:last-of-type .ext-hubs-artbrowse-filter-showall .azc-validatableControl-none.azc-text-label';
-//   }
-//   async updateTargetElement(inputEvent) {
-//     inputEvent.stopPropagation();
-//     const view = document.location.hash.replace(/^[\S\s]*\/subscriptions/, '/subscriptions') || '';
-//     if (!view) return;
-//     const input = inputEvent.currentTarget.querySelector('input[type="checkbox"]');
-//     if (!input) return;
-
-//     if (input.checked) this.options[this.propName][view] = input.checked;
-//     else delete this.options[this.propName][view];
-
-//     await chrome.storage.local.set({
-//       "visibilityRestorer": {
-//         status: true,
-//         options: this.options
-//       }
-//     });
-//   }
-//   detectTargetElement() {
-//     const targetElements = [...document.querySelectorAll(this.SELECTOR_TARGET_ELEMENT)];
-//     const view = document.location.hash.replace(/^[\S\s]*\/subscriptions/, '/subscriptions') || '';
-//     if (targetElements.length === 0 || !view || this.inputMap[view] == targetElements[0]) return;
-//     this.inputMap[view] = targetElements[0];
-//     if (this.options[this.propName][view]) this.inputMap[view].click();
-//     this.inputMap[view].addEventListener('click', this.updateTargetElement.bind(this));
-//   }
-//   startWatching(options) {
-//     this.options = options || { [this.propName]: {} };
-//     this.detectTargetElement();
-//     this.observer.observe(document, { childList: true, subtree: true });
-//   }
-
-//   stopWatching() {
-//     super.stopWatching();
-//   }
-// }
-
 class FilterRestorer extends Watcher {
   constructor() {
     super();
@@ -146,7 +102,7 @@ class AdvancedCopy extends Watcher {
   constructor() {
     super();
     this.messageQueue = [];
-    this.re = /(\/subscriptions\/[0-9a-f]{8}(?:-[0-9a-f]{4}){4}[0-9a-f]{8}\/resourceGroups\/([^/]+)\/providers\/([^/]+)\/([^/]+)\/([^/]+))/i;
+    this.re = /(\/subscriptions\/[0-9a-f]{8}(?:-[0-9a-f]{4}){4}[0-9a-f]{8}\/resourceGroups\/([^/]+)\/providers\/([^/]+)(?:\/([^/]+)\/([^/]+))+)/i;
     this.cache = {};
     this.menus = [{
       title: 'Resource name',
