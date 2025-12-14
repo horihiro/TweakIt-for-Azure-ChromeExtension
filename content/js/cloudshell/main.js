@@ -152,6 +152,7 @@ const socketOpenHandler = (e) => {
   const [_, host, path] = socket.url.match(/wss:\/\/([^\/]+)\/\$hc\/([^\/]+)\/.*/);
   globalSettings.endpoint = { host, path };
 
+  defaultStartupCommands.length = 0;
   defaultStartupCommands.push(
     { command: { bash: `export SOCKET_HOST=${globalSettings.endpoint.host}`, pwsh: `$Env:SOCKET_HOST=${globalSettings.endpoint.host}` }, background: true, history: false },
     { command: { bash: `export SOCKET_PATH=${globalSettings.endpoint.path}`, pwsh: `$Env:SOCKET_PATH=${globalSettings.endpoint.path}` }, background: true, history: false }
@@ -222,13 +223,8 @@ window.addEventListener('startupFeatureStatus', async (e) => {
   window.dispatchEvent(new CustomEvent('updateFeatureStatus', { detail: e.detail }));
   globalSettings.tweakitOptions = { ...e.detail };
 
-  const startupCommands = defaultStartupCommands.map(options => {
-    return {
-      command: options.command[globalSettings.shellType],
-      background: options.background,
-      history: options.history,
-    };
-  });
+  const startupCommands = [];
+
 
   if (globalSettings.shellType !== 'bash') return;
 
@@ -251,7 +247,7 @@ window.addEventListener('startupFeatureStatus', async (e) => {
         history: !e.detail.executeStartupScript.options.disabledOptions?.includes('cloudshell_enable_startup_history'),
       });
     // Execute all startup commands
-    window.term.write(`${ASCII.ESC}[1K\r${ASCII.ESC}[48;5;31m[TWEAKIT] Executing initial configuration...`);
+    // window.term.write(`${ASCII.ESC}[1K\r${ASCII.ESC}[48;5;31m[TWEAKIT] Executing initial configuration...\r\n`);
     const dotfilecontents = [];
     await startupCommands.reduce(async (p, options) => {
       await p;
@@ -265,7 +261,7 @@ window.addEventListener('startupFeatureStatus', async (e) => {
           }
         );
       }
-      dotfilecontents.push(options.command);
+      // dotfilecontents.push(options.command);
       return Promise.resolve();
     }, Promise.resolve());
     globalSettings.user = (await commandExecutor.execute('whoami', globalSettings.shellPrompt, { background: true, history: false })).trim();
@@ -279,26 +275,23 @@ window.addEventListener('startupFeatureStatus', async (e) => {
         'cp ${HOME}/.bashrc-${DATETIME}.bak ${HOME}/.bashrc;',
         'unset DATETIME;',
         'echo "source ${HOME}/.tweakit" >>  ${HOME}/.bashrc;',
-        'source ${HOME}/.tweakit;'
+        'source ${HOME}/.tweakit;',
+        ...defaultStartupCommands.map(options => options.command[globalSettings.shellType] ).map(line => `${line.replace(/'/g, `'\\''`)}`),
       ].join(''), globalSettings.shellPrompt, { background: true, history: false });
     }
 
     globalSettings.shellType === 'bash' && e.detail.executeDockerDaemon?.status &&
-      await [
-        'startupDocker() { test ${DOCKER_HOST} || : && { ps aux | grep "[r]ootlesskit" > /dev/null && : || { BIN_DIR=${HOME}/.local/bin;TARGET_FILE=${BIN_DIR}/start-rootless-docker.sh;BACKUP_FILE=${TARGET_FILE}-$(date "+%Y-%m-%d-%H-%M-%S");cp ${TARGET_FILE} ${BACKUP_FILE};sed -E \'s/^(CONDITIONAL_FLAGS="--iptables=false)[^"]+"/\\1"/\' ${BACKUP_FILE} > ${TARGET_FILE};chmod +x ${TARGET_FILE};curl -s "https://$SOCKET_HOST/$SOCKET_PATH/tunnel" -X POST -H "Content-Type: application/json" -H "Authorization: Bearer $(az account get-access-token --query "accessToken" --output tsv)" -d "{\\"token\\": \\"$(az account get-access-token --query "accessToken" --output tsv --scope 46da2f7e-b5ef-422a-88d4-2a7f9de6a0b2/all)\\", \\"folderPath\\": \\"\\", \\"tunnelName\\": \\"tweakit\\", \\"extensions\\": []}">/dev/null;VSCODE_PID=$(ps aux | grep "[v]scode tunnel" | tail -n 1 | awk \'{print $2}\'); test ${VSCODE_PID};kill ${VSCODE_PID};vscode tunnel prune > /dev/null;sleep 5;DOCKER_ENGINE_VERSION=$(docker version | grep "Server" -A 2 | grep "Version" | awk \'{print $2}\');test ${DOCKER_ENGINE_VERSION} || : && { curl -sL "https://download.docker.com/linux/static/stable/x86_64/docker-${DOCKER_ENGINE_VERSION}.tgz" -o ${BIN_DIR}/docker-${DOCKER_ENGINE_VERSION}.tgz;tar -xzvf ${BIN_DIR}/docker-${DOCKER_ENGINE_VERSION}.tgz -O docker/docker-proxy > ${BIN_DIR}/docker-proxy 2>/dev/null;chmod +x ${BIN_DIR}/docker-proxy; rm ${BIN_DIR}/docker-${DOCKER_ENGINE_VERSION}.tgz; }; }; }; };',
-        'startupDocker 2>&1 > /dev/null &',
-        'unset -f startupDocker',
-      ].reduce(async (p, cmd) => {
-        await p;
-        return commandExecutor.execute(cmd, globalSettings.shellPrompt, { background: true, history: false });
-      }, Promise.resolve());
+      await commandExecutor.execute(
+        '( startupDocker() { test ${DOCKER_HOST} || : && { ps aux | grep "[r]ootlesskit" > /dev/null && : || { BIN_DIR=${HOME}/.local/bin;TARGET_FILE=${BIN_DIR}/start-rootless-docker.sh;BACKUP_FILE=${TARGET_FILE}-$(date "+%Y-%m-%d-%H-%M-%S");cp ${TARGET_FILE} ${BACKUP_FILE};sed -E \'s/^(CONDITIONAL_FLAGS="--iptables=false)[^"]+"/\\1"/\' ${BACKUP_FILE} > ${TARGET_FILE};chmod +x ${TARGET_FILE};curl -s "https://$SOCKET_HOST/$SOCKET_PATH/tunnel" -X POST -H "Content-Type: application/json" -H "Authorization: Bearer $(az account get-access-token --query "accessToken" --output tsv)" -d "{\\"token\\": \\"$(az account get-access-token --query "accessToken" --output tsv --scope 46da2f7e-b5ef-422a-88d4-2a7f9de6a0b2/all)\\", \\"folderPath\\": \\"\\", \\"tunnelName\\": \\"tweakit\\", \\"extensions\\": []}">/dev/null;VSCODE_PID=$(ps aux | grep "[v]scode tunnel" | tail -n 1 | awk \'{print $2}\'); test ${VSCODE_PID};kill ${VSCODE_PID};vscode tunnel prune > /dev/null;sleep 5;DOCKER_ENGINE_VERSION=$(docker version | grep "Server" -A 2 | grep "Version" | awk \'{print $2}\');test ${DOCKER_ENGINE_VERSION} || : && { curl -sL "https://download.docker.com/linux/static/stable/x86_64/docker-${DOCKER_ENGINE_VERSION}.tgz" -o ${BIN_DIR}/docker-${DOCKER_ENGINE_VERSION}.tgz;tar -xzvf ${BIN_DIR}/docker-${DOCKER_ENGINE_VERSION}.tgz -O docker/docker-proxy > ${BIN_DIR}/docker-proxy 2>/dev/null;chmod +x ${BIN_DIR}/docker-proxy; rm ${BIN_DIR}/docker-${DOCKER_ENGINE_VERSION}.tgz; }; }; }; };startupDocker 2>&1 > /dev/null & )',
+        globalSettings.shellPrompt,
+        { background: true, history: false });
 
-      window.term.write(` Finished.${ASCII.ESC}[0m\r\n`);
-      window.term.write(globalSettings.shellPrompt);
+    // window.term.write(` Finished.${ASCII.ESC}[0m\r\n`);
+    window.term.write(globalSettings.shellPrompt);
   }
   catch (err) {
-  console.error('Error executing initial configuration:', err);
-}
+    console.error('Error executing initial configuration:', err);
+  }
 });
 
 window.addEventListener('updateFeatureStatus', async (e) => {
@@ -321,5 +314,4 @@ window.addEventListener('updateFeatureStatus', async (e) => {
 
   keepCloudShellSession.stop();
   globalSettings.tweakitOptions?.keepCloudShellSession?.status && keepCloudShellSession.start(sockets.find(s => !s.url.endsWith('/control')));
-
 });
