@@ -116,7 +116,7 @@ document.addEventListener('DOMContentLoaded', () => {
           chrome.storage.local.get([k], (items) => {
             // some options may depend on others; handle them here if needed
             const obj = {}
-            obj[k] = { ...items[k], status: el.checked };
+            obj[k] = { ...items[k], status: el.checked, options:{...items[k]?.options || {}} };
             chrome.storage.local.set(obj);
             if (k === 'advancedCopy') {
               copyOptions.forEach(checkbox => {
