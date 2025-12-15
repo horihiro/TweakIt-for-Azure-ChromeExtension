@@ -5,6 +5,8 @@
 
 ### Bug Fix(es)
   - Advanced Copy: copying resource ids for sub-resources
+  - Cloud Shell: enhance storage handling for cloud shell options in settings
+  - Cloud Shell: clear default startup commands and improve socket handling
 
 ## [1.1.1](https://github.com/horihiro/TweakIt-for-Azure-ChromeExtension/releases/tag/1.1.1)
 ### Improve feature(s)
