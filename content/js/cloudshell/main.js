@@ -17,6 +17,7 @@ class KeepCloudShellSession {
     }, this.pingTimeout);
   }
   start(socket) {
+    if (!socket || socket.readyState !== WebSocket.OPEN) return;
     this.socket = socket;
     this.socket.addEventListener('message', this.onMessageHandler.bind(this));
     this.socket.send(this.pingString);
@@ -25,6 +26,7 @@ class KeepCloudShellSession {
     this.timeout && clearTimeout(this.timeout);
     this.timeout = 0;
     this.socket && this.socket.removeEventListener('message', this.onMessageHandler.bind(this));
+    this.socket = null;
   }
 }
 
@@ -314,6 +316,6 @@ window.addEventListener('updateFeatureStatus', async (e) => {
     }
   }
 
-  // keepCloudShellSession.stop();
-  // globalSettings.tweakitOptions?.keepCloudShellSession?.status && keepCloudShellSession.start(sockets.find(s => !s.url.endsWith('/control')));
+  keepCloudShellSession.stop();
+  globalSettings.tweakitOptions?.keepCloudShellSession?.status && keepCloudShellSession.start(sockets.find(s => !s.url.endsWith('/control')));
 });
