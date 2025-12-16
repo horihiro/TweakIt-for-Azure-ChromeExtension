@@ -51,6 +51,7 @@ document.addEventListener('DOMContentLoaded', () => {
     filterRestorer: document.getElementById('resource_save_filter'),
 
     keepCloudShellSession: document.getElementById('cloudshell_extend_session'),
+    cloudShellOpener: document.getElementById('cloudshell_new_tab'),
     executeStartupScript: document.getElementById('cloudshell_enable_startup'),
     executeDockerDaemon: document.getElementById('cloudshell_enable_docker'),
     replaceCodeCommand: document.getElementById('cloudshell_replace_code'),
@@ -115,7 +116,7 @@ document.addEventListener('DOMContentLoaded', () => {
           chrome.storage.local.get([k], (items) => {
             // some options may depend on others; handle them here if needed
             const obj = {}
-            obj[k] = { ...items[k], status: el.checked };
+            obj[k] = { ...items[k], status: el.checked, options:{...items[k]?.options || {}} };
             chrome.storage.local.set(obj);
             if (k === 'advancedCopy') {
               copyOptions.forEach(checkbox => {
