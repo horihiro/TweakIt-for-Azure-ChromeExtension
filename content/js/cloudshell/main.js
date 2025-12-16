@@ -261,14 +261,14 @@ window.addEventListener('startupFeatureStatus', async (e) => {
           }
         );
       }
-      // dotfilecontents.push(options.command);
+      dotfilecontents.push(options.command);
       return Promise.resolve();
     }, Promise.resolve());
     globalSettings.user = (await commandExecutor.execute('whoami', globalSettings.shellPrompt, { background: true, history: false })).trim();
     if (dotfilecontents.length > 0) {
       await commandExecutor.execute([
         'rm ${HOME}/.tweakit 2>/dev/null;',
-        'export DATETIME=$(date "+%Y-%m-%d %H:%M:%S");',
+        'export DATETIME=$(date "+%Y-%m-%dT%H:%M:%S");',
         `echo "# TweakIt for Azure Cloud Shell - Auto generated on \${DATETIME} by ${globalSettings.user}" > \${HOME}/.tweakit;`,
         ...dotfilecontents.join('\n').split('\n').map(line => `echo '${line.replace(/'/g, `'\\''`)}' >> \${HOME}/.tweakit;`),
         'grep -v \'source ${HOME}/.tweakit\' "${HOME}/.bashrc" > "${HOME}/.bashrc-${DATETIME}.bak";',
@@ -287,7 +287,7 @@ window.addEventListener('startupFeatureStatus', async (e) => {
         { background: true, history: false });
 
     // window.term.write(` Finished.${ASCII.ESC}[0m\r\n`);
-    window.term.write(globalSettings.shellPrompt);
+    // window.term.write(globalSettings.shellPrompt);
   }
   catch (err) {
     console.error('Error executing initial configuration:', err);
