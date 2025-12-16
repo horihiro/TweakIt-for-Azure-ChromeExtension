@@ -159,6 +159,8 @@ const socketOpenHandler = (e) => {
   );
 
   init();
+  keepCloudShellSession.stop();
+  globalSettings.tweakitOptions?.keepCloudShellSession?.status && keepCloudShellSession.start(socket);
 };
 
 const socketMessageHandler = (e) => {
@@ -312,6 +314,6 @@ window.addEventListener('updateFeatureStatus', async (e) => {
     }
   }
 
-  keepCloudShellSession.stop();
-  globalSettings.tweakitOptions?.keepCloudShellSession?.status && keepCloudShellSession.start(sockets.find(s => !s.url.endsWith('/control')));
+  // keepCloudShellSession.stop();
+  // globalSettings.tweakitOptions?.keepCloudShellSession?.status && keepCloudShellSession.start(sockets.find(s => !s.url.endsWith('/control')));
 });
