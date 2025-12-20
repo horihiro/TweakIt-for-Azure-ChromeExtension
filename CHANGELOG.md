@@ -2,6 +2,7 @@
 ## [1.1.3](https://github.com/horihiro/TweakIt-for-Azure-ChromeExtension/releases/tag/1.1.3)
 ### Bug Fix(es)
   - Cloud Shell: remove redundant default startup command and ensure proper command formatting
+  - Cloud Shell: improve shell prompt handling and streamline command execution
 
 ## [1.1.2](https://github.com/horihiro/TweakIt-for-Azure-ChromeExtension/releases/tag/1.1.2)
 ### New feature(s)

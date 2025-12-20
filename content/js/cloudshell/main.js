@@ -2,6 +2,7 @@ const ASCII = {
   ESC: '',
   DEL: '',
   ETX: '',
+  BACKSPACE: '',
 }
 
 class KeepCloudShellSession {
@@ -190,7 +191,7 @@ const socketMessageHandler = (e) => {
         if (!currentPrompt
           || new RegExp(`^${PROMPT_LEADING_PATTERN[globalSettings.shellType]}> `).test(currentPrompt)
           || globalSettings.shellPrompt === currentPrompt) return;
-        globalSettings.shellPrompt = currentPrompt;
+        globalSettings.shellPrompt = currentPrompt.replace(` ${ASCII.BACKSPACE}${ASCII.ESC}[K`, '');
         window.dispatchEvent(new CustomEvent('shellPromptUpdated', { detail: { shellPrompt: globalSettings.shellPrompt } }));
       }, 10);
     };
@@ -268,21 +269,20 @@ window.addEventListener('startupFeatureStatus', async (e) => {
       return Promise.resolve();
     }, Promise.resolve());
     globalSettings.user = (await commandExecutor.execute('whoami', globalSettings.shellPrompt, { background: true, history: false })).trim();
-    if (dotfilecontents.length > 0) {
-      await commandExecutor.execute([
-        'rm ${HOME}/.tweakit 2>/dev/null;',
-        'export DATETIME=$(date "+%Y-%m-%dT%H:%M:%S");',
-        `echo "# TweakIt for Azure Cloud Shell - Auto generated on \${DATETIME} by ${globalSettings.user}" > \${HOME}/.tweakit;`,
-        `echo "export TWEAKIT_INJECTED=1" >> \${HOME}/.tweakit;`,
-        ...dotfilecontents.join('\n').split('\n').map(line => `echo '${line.replace(/'/g, `'\\''`)}' >> \${HOME}/.tweakit;`),
-        'grep -v \'source ${HOME}/.tweakit\' "${HOME}/.bashrc" > "${HOME}/.bashrc-${DATETIME}.bak";',
-        'cp ${HOME}/.bashrc-${DATETIME}.bak ${HOME}/.bashrc;',
-        'unset DATETIME;',
-        'echo "source ${HOME}/.tweakit" >>  ${HOME}/.bashrc;',
-        'source ${HOME}/.tweakit;',
-        ...defaultStartupCommands.map(options => options.command[globalSettings.shellType]).map(line => `${line.replace(/'/g, `'\\''`)};`),
-      ].join(''), globalSettings.shellPrompt, { background: true, history: false });
-    }
+
+    await commandExecutor.execute([
+      'rm ${HOME}/.tweakit 2>/dev/null;',
+      'export DATETIME=$(date "+%Y-%m-%dT%H:%M:%S");',
+      `echo "# TweakIt for Azure Cloud Shell - Auto generated on \${DATETIME} by ${globalSettings.user}" > \${HOME}/.tweakit;`,
+      `echo "export TWEAKIT_INJECTED=1" >> \${HOME}/.tweakit;`,
+      ...dotfilecontents.join('\n').split('\n').map(line => `echo '${line.replace(/'/g, `'\\''`)}' >> \${HOME}/.tweakit;`),
+      'grep -v \'source ${HOME}/.tweakit\' "${HOME}/.bashrc" > "${HOME}/.bashrc-${DATETIME}.bak";',
+      'cp ${HOME}/.bashrc-${DATETIME}.bak ${HOME}/.bashrc;',
+      'unset DATETIME;',
+      'echo "source ${HOME}/.tweakit" >>  ${HOME}/.bashrc;',
+      'source ${HOME}/.tweakit;',
+      ...defaultStartupCommands.map(options => options.command[globalSettings.shellType]).map(line => `${line.replace(/'/g, `'\\''`)};`),
+    ].join(''), globalSettings.shellPrompt, { background: true, history: false });
 
     globalSettings.shellType === 'bash' && e.detail.executeDockerDaemon?.status &&
       await commandExecutor.execute(
