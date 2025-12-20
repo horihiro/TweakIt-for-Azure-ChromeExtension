@@ -84,7 +84,6 @@ const commandExecutor = new CommandExecutor();
 const sockets = [];
 const defaultStartupCommands = [
   // Default startup commands
-  { command: { bash: 'export TWEAKIT_INJECTED=1', pwsh: '$Env:TWEAKIT_INJECTED=1' }, background: true, history: false },
   // { command: 'alias ll="ls -la"', background: true, history: false },
   // { command: `function tree() { cd $1 && pwd;find . | sort | sed '1d;s/^\\.//;s/\\/\\([^/]*\\)$/|--\\1/;s/\\/[^/|]*/|  /g' && cd - > /dev/null; }`, background: true, history: false },
 ];
@@ -274,13 +273,14 @@ window.addEventListener('startupFeatureStatus', async (e) => {
         'rm ${HOME}/.tweakit 2>/dev/null;',
         'export DATETIME=$(date "+%Y-%m-%dT%H:%M:%S");',
         `echo "# TweakIt for Azure Cloud Shell - Auto generated on \${DATETIME} by ${globalSettings.user}" > \${HOME}/.tweakit;`,
+        `echo "export TWEAKIT_INJECTED=1" >> \${HOME}/.tweakit;`,
         ...dotfilecontents.join('\n').split('\n').map(line => `echo '${line.replace(/'/g, `'\\''`)}' >> \${HOME}/.tweakit;`),
         'grep -v \'source ${HOME}/.tweakit\' "${HOME}/.bashrc" > "${HOME}/.bashrc-${DATETIME}.bak";',
         'cp ${HOME}/.bashrc-${DATETIME}.bak ${HOME}/.bashrc;',
         'unset DATETIME;',
         'echo "source ${HOME}/.tweakit" >>  ${HOME}/.bashrc;',
         'source ${HOME}/.tweakit;',
-        ...defaultStartupCommands.map(options => options.command[globalSettings.shellType] ).map(line => `${line.replace(/'/g, `'\\''`)}`),
+        ...defaultStartupCommands.map(options => options.command[globalSettings.shellType]).map(line => `${line.replace(/'/g, `'\\''`)};`),
       ].join(''), globalSettings.shellPrompt, { background: true, history: false });
     }
 
