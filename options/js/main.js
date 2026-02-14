@@ -45,6 +45,8 @@ document.addEventListener('DOMContentLoaded', () => {
     resourceGroupDecorator: document.getElementById('visual_rg_decoration'),
 
     desktopNotification: document.getElementById('notify_desktop'),
+    desktopNotifyFilterEnabled: document.getElementById('notify_filter'),
+    desktopNotifyFilterRegex: document.getElementById('notify_filter_regex'),
     activateTab: document.getElementById('notify_activate_tab'),
 
     advancedCopy: document.getElementById('resource_copy'),
@@ -104,6 +106,9 @@ document.addEventListener('DOMContentLoaded', () => {
             scriptTextArea.value = items[k]?.options?.script?.bash || '';
           }
         }
+        else if (el.tagName === 'TEXTAREA') {
+          el.value = items[k]?.value || '';
+        }
       });
     });
 
@@ -134,7 +139,33 @@ document.addEventListener('DOMContentLoaded', () => {
           });
         });
       }
+      else if (el.tagName === 'TEXTAREA') {
+        el.addEventListener('change', () => {
+          const validityOutput = document.getElementById('notify_filter_valid');
+          const filterRegexText = el.value.trim();
+          if (filterRegexText.length > 0) {
+            try {
+              new RegExp(filterRegexText);
+              validityOutput.textContent = "Regular expression is valid.";
+            }
+            catch(err) {
+              validityOutput.textContent = "Invalid RegExp: \"" + err.toString() + "\".";
+              return;
+            }
+          }
+          else {
+            validityOutput.textContent = '';
+          }
+
+          chrome.storage.local.get([k], (items) => {
+            const obj = {}
+            obj[k] = { ...items[k], value: filterRegexText, options:{...items[k]?.options || {}} };
+            chrome.storage.local.set(obj);
+          });
+        });
+      }
     });
+
     copyOptions.forEach(checkbox => {
       checkbox.addEventListener('change', () => {
         chrome.storage.local.get(["advancedCopy"], (items) => {
