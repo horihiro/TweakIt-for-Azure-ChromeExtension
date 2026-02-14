@@ -932,7 +932,9 @@ class ToastWatcher extends Watcher {
   constructor() {
     super();
     this.TARGET_CLASS_TOAST = '.fxs-toast';
+    this.TOAST_ITEM_SELECTOR = 'li.fxs-toast-item';
     this.messageQueue = [];
+    this.filterRegExp = null;
 
     this.observer = new MutationObserver(this.mainObserverCallback.bind(this));
   }
@@ -941,6 +943,11 @@ class ToastWatcher extends Watcher {
     mutations.forEach((mutation/* , i, array */) => {
       Array.prototype.forEach.call(mutation.addedNodes, (addedNode/* , i, array */) => {
         if (!addedNode.innerHTML || !/<use [^>]+><\/use>/.test(addedNode.innerHTML) || addedNode.parentNode.className !== 'fxs-toast-icon') return;
+        const li = addedNode.closest(this.TOAST_ITEM_SELECTOR);
+        if (this.filterRegExp && this.filterRegExp.test(li.innerHTML) === true) {
+//        console.log( "Suppressing notification due to RegExp match." );
+          return;
+        }
         this.send2serviceWorker();
       });
     });
@@ -952,9 +959,17 @@ class ToastWatcher extends Watcher {
 
   startWatching(options) {
     this.options = options;
+    if (options.filterEnabled && options.filterRegExp) {
+      try {
+        this.filterRegExp = new RegExp(options.filterRegExp);
+      }
+      catch {
+        this.filterRegExp = null;
+      }
+    }
     const toastContainer = document.querySelector(this.TARGET_CLASS_TOAST);
     if (toastContainer) {
-      this.observer.observe(document.querySelector(this.TARGET_CLASS_TOAST), { childList: true, subtree: true });
+      this.observer.observe(toastContainer, { childList: true, subtree: true });
       return
     }
     const toastContainerObserver = new MutationObserver((/* mutations */) => {

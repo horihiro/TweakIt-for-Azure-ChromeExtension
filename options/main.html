@@ -117,6 +117,14 @@
         </td>
         <td><img src="./img/desktop-notfication.png" /></td>
       </tr>
+      <tr>
+        <td>
+        <label class="switch"><input type="checkbox" class="level_0" id="notify_filter" /><span
+              class="slider"></span><span>Suppress desktop notifications matching this RegExp:</span>
+        </label>
+        </td>
+        <td><textarea id="notify_filter_regex" rows="4" cols="40"></textarea><output id="notify_filter_valid"></output></td>
+    </tr>
     </table>
     <h2>Experimental features</h2>
     <table>
@@ -275,6 +283,8 @@
         <td></td>
       </tr> -->
     </table>
+  </div>
+
   <script src="./js/main.js"></script>
 </body>
 
