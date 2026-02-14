@@ -45,8 +45,6 @@ document.addEventListener('DOMContentLoaded', () => {
     resourceGroupDecorator: document.getElementById('visual_rg_decoration'),
 
     desktopNotification: document.getElementById('notify_desktop'),
-    desktopNotifyFilterEnabled: document.getElementById('notify_filter'),
-    desktopNotifyFilterRegex: document.getElementById('notify_filter_regex'),
     activateTab: document.getElementById('notify_activate_tab'),
 
     advancedCopy: document.getElementById('resource_copy'),
@@ -57,6 +55,11 @@ document.addEventListener('DOMContentLoaded', () => {
     executeStartupScript: document.getElementById('cloudshell_enable_startup'),
     executeDockerDaemon: document.getElementById('cloudshell_enable_docker'),
     replaceCodeCommand: document.getElementById('cloudshell_replace_code'),
+  };
+
+  const desktopNotificationOptions = {
+    filterEnabled: document.getElementById('notify_filter'),
+    filterRegExp: document.getElementById('notify_filter_regex')
   };
 
   const copyOptions = [
@@ -104,6 +107,9 @@ document.addEventListener('DOMContentLoaded', () => {
             });
             scriptTextArea.disabled = !el.checked;
             scriptTextArea.value = items[k]?.options?.script?.bash || '';
+          } else if (k === 'desktopNotification') {
+            desktopNotificationOptions.filterEnabled.checked = items[k]?.options?.filterEnabled || false;
+            desktopNotificationOptions.filterRegExp .value   = items[k]?.options?.filterRegExp  || '';
           }
         }
         else if (el.tagName === 'TEXTAREA') {
@@ -140,30 +146,47 @@ document.addEventListener('DOMContentLoaded', () => {
         });
       }
       else if (el.tagName === 'TEXTAREA') {
-        el.addEventListener('change', () => {
-          const validityOutput = document.getElementById('notify_filter_valid');
-          const filterRegexText = el.value.trim();
-          if (filterRegexText.length > 0) {
-            try {
-              new RegExp(filterRegexText);
-              validityOutput.textContent = "Regular expression is valid.";
-            }
-            catch(err) {
-              validityOutput.textContent = "Invalid RegExp: \"" + err.toString() + "\".";
-              return;
-            }
-          }
-          else {
-            validityOutput.textContent = '';
-          }
-
-          chrome.storage.local.get([k], (items) => {
-            const obj = {}
-            obj[k] = { ...items[k], value: filterRegexText, options:{...items[k]?.options || {}} };
-            chrome.storage.local.set(obj);
-          });
-        });
       }
+    });
+
+    desktopNotificationOptions.filterEnabled.addEventListener('change', () => {
+      const el = desktopNotificationOptions.filterEnabled;
+      const k = 'desktopNotification';
+      chrome.storage.local.get([k], (items) => {
+        const obj = {}
+        obj[k] = { ...items[k], options:{...items[k]?.options || {}} };
+        obj[k].options.filterEnabled = el.checked;
+        chrome.storage.local.set(obj);
+      });
+    });
+    desktopNotificationOptions.filterRegExp.addEventListener('change', () => {
+      const el = desktopNotificationOptions.filterRegExp;
+      const validityOutput = document.getElementById('notify_filter_valid');
+      const filterRegexText = el.value.trim();
+      if (filterRegexText.length > 0) {
+        try {
+          new RegExp(filterRegexText);
+          validityOutput.textContent = "Regular expression is valid.";
+          validityOutput.style.display = 'block';
+        }
+        catch(err) {
+          validityOutput.textContent = "Invalid RegExp: \"" + err.toString() + "\".";
+          validityOutput.style.display = 'block';
+          return;
+        }
+      }
+      else {
+        validityOutput.textContent = '';
+        validityOutput.style.display = 'none';
+      }
+
+      const k = 'desktopNotification';
+      chrome.storage.local.get([k], (items) => {
+        const obj = {}
+        obj[k] = { ...items[k], options:{...items[k]?.options || {}} };
+        obj[k].options.filterRegExp = filterRegexText;
+        chrome.storage.local.set(obj);
+      });
     });
 
     copyOptions.forEach(checkbox => {
