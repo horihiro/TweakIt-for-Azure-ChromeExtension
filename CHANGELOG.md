@@ -1,4 +1,9 @@
 # Release History
+
+## [1.1.4](https://github.com/horihiro/TweakIt-for-Azure-ChromeExtension/releases/tag/1.1.4)
+### New feature(s)
+  - Toast Watcher: add notification filter options to control which notifications are displayed (by @daiplusplus)
+
 ## [1.1.3](https://github.com/horihiro/TweakIt-for-Azure-ChromeExtension/releases/tag/1.1.3)
 ### Bug Fix(es)
   - Cloud Shell: remove redundant default startup command and ensure proper command formatting
