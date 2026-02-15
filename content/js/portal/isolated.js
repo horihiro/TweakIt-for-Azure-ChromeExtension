@@ -959,7 +959,7 @@ class ToastWatcher extends Watcher {
 
   startWatching(options) {
     this.options = options;
-    if (options.filterEnabled && options.filterRegExp) {
+    if (options.enabledOptions?.includes('notify_filter') && options.filterRegExp) {
       try {
         this.filterRegExp = new RegExp(options.filterRegExp);
       }

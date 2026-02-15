@@ -57,10 +57,10 @@ document.addEventListener('DOMContentLoaded', () => {
     replaceCodeCommand: document.getElementById('cloudshell_replace_code'),
   };
 
-  const desktopNotificationOptions = {
-    filterEnabled: document.getElementById('notify_filter'),
-    filterRegExp: document.getElementById('notify_filter_regex')
-  };
+  const desktopNotificationOptions = [
+    document.getElementById('notify_filter')
+  ];
+  const notificationFilterRegExp = document.getElementById('notify_filter_regex');
 
   const copyOptions = [
     document.getElementById('resource_copy_name'),
@@ -108,8 +108,14 @@ document.addEventListener('DOMContentLoaded', () => {
             scriptTextArea.disabled = !el.checked;
             scriptTextArea.value = items[k]?.options?.script?.bash || '';
           } else if (k === 'desktopNotification') {
-            desktopNotificationOptions.filterEnabled.checked = items[k]?.options?.filterEnabled || false;
-            desktopNotificationOptions.filterRegExp .value   = items[k]?.options?.filterRegExp  || '';
+            desktopNotificationOptions.forEach(checkbox => {
+              checkbox.disabled = !el.checked;
+              checkbox.checked = items[k]?.options?.enabledOptions?.includes(checkbox.id);
+              if (checkbox.id === 'notify_filter') {
+                notificationFilterRegExp.disabled = !checkbox.checked || !el.checked;
+              }
+            });
+            notificationFilterRegExp.value = items[k]?.options?.filterRegExp || '';
           }
         }
         else if (el.tagName === 'TEXTAREA') {
@@ -127,20 +133,25 @@ document.addEventListener('DOMContentLoaded', () => {
           chrome.storage.local.get([k], (items) => {
             // some options may depend on others; handle them here if needed
             const obj = {}
-            obj[k] = { ...items[k], status: el.checked, options:{...items[k]?.options || {}} };
+            obj[k] = { ...items[k], status: el.checked, options: { ...items[k]?.options || {} } };
             chrome.storage.local.set(obj);
             if (k === 'advancedCopy') {
               copyOptions.forEach(checkbox => {
                 checkbox.disabled = !el.checked;
-                // checkbox.parentElement.style.cursor = el.checked ? 'pointer' : 'not-allowed';
               });
             } else if (k === 'executeStartupScript') {
               scriptOptions.forEach(checkbox => {
                 checkbox.disabled = !el.checked;
-                // checkbox.parentElement.style.cursor = el.checked ? 'pointer' : 'not-allowed';
               });
               scriptTextArea.disabled = !el.checked;
-              // scriptTextArea.style.cursor = el.checked ? 'text' : 'not-allowed';
+            } else if (k === 'desktopNotification') {
+              notificationFilterRegExp.disabled = !el.checked;
+              desktopNotificationOptions.forEach(checkbox => {
+                checkbox.disabled = !el.checked;
+                if (checkbox.id === 'notify_filter') {
+                  notificationFilterRegExp.disabled = !checkbox.checked || !el.checked;
+                }
+              });
             }
           });
         });
@@ -149,18 +160,34 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
 
-    desktopNotificationOptions.filterEnabled.addEventListener('change', () => {
-      const el = desktopNotificationOptions.filterEnabled;
+    desktopNotificationOptions.forEach(checkbox => {
       const k = 'desktopNotification';
-      chrome.storage.local.get([k], (items) => {
-        const obj = {}
-        obj[k] = { ...items[k], options:{...items[k]?.options || {}} };
-        obj[k].options.filterEnabled = el.checked;
-        chrome.storage.local.set(obj);
+      checkbox.addEventListener('change', () => {
+        chrome.storage.local.get([k], (items) => {
+          const enabledOptionMap = (items[k]?.options?.enabledOptions || []).reduce((acc, cur) => {
+            acc[cur] = true;
+            return acc;
+          }, {});
+          enabledOptionMap[checkbox.id] = checkbox.checked;
+          const obj = {
+            [k]: {
+              ...items[k], options: {
+                ...items[k].options, enabledOptions: Object.keys(enabledOptionMap).reduce((acc, cur) => {
+                  if (enabledOptionMap[cur]) acc.push(cur);
+                  return acc;
+                }, [])
+              }
+            }
+          };
+          chrome.storage.local.set(obj);
+        });
+        if (checkbox.id === 'notify_filter') {
+          notificationFilterRegExp.disabled = !checkbox.checked;
+        }
       });
     });
-    desktopNotificationOptions.filterRegExp.addEventListener('change', () => {
-      const el = desktopNotificationOptions.filterRegExp;
+    notificationFilterRegExp.addEventListener('change', () => {
+      const el = notificationFilterRegExp;
       const validityOutput = document.getElementById('notify_filter_valid');
       const filterRegexText = el.value.trim();
       if (filterRegexText.length > 0) {
@@ -169,7 +196,7 @@ document.addEventListener('DOMContentLoaded', () => {
           validityOutput.textContent = "Regular expression is valid.";
           validityOutput.style.display = 'block';
         }
-        catch(err) {
+        catch (err) {
           validityOutput.textContent = "Invalid RegExp: \"" + err.toString() + "\".";
           validityOutput.style.display = 'block';
           return;
@@ -183,25 +210,30 @@ document.addEventListener('DOMContentLoaded', () => {
       const k = 'desktopNotification';
       chrome.storage.local.get([k], (items) => {
         const obj = {}
-        obj[k] = { ...items[k], options:{...items[k]?.options || {}} };
+        obj[k] = { ...items[k], options: { ...items[k]?.options || {} } };
         obj[k].options.filterRegExp = filterRegexText;
         chrome.storage.local.set(obj);
       });
     });
 
     copyOptions.forEach(checkbox => {
+      const k = 'advancedCopy';
       checkbox.addEventListener('change', () => {
-        chrome.storage.local.get(["advancedCopy"], (items) => {
-          const exclusionMap = (  items["advancedCopy"]?.options?.exclusions || []).reduce((acc, cur) => {
+        chrome.storage.local.get([k], (items) => {
+          const exclusionMap = (items[k]?.options?.exclusions || []).reduce((acc, cur) => {
             acc[cur] = true;
             return acc;
           }, {});
           exclusionMap[checkbox.id] = !checkbox.checked;
           const obj = {
-            advancedCopy: { ...items["advancedCopy"], options: { ...items["advancedCopy"].options, exclusions: Object.keys(exclusionMap).reduce((acc, cur) => {
-              if (exclusionMap[cur]) acc.push(cur);
-              return acc;
-            }, []) } }
+            [k]: {
+              ...items[k], options: {
+                ...items[k].options, exclusions: Object.keys(exclusionMap).reduce((acc, cur) => {
+                  if (exclusionMap[cur]) acc.push(cur);
+                  return acc;
+                }, [])
+              }
+            }
           };
           chrome.storage.local.set(obj, () => {
             const img = document.getElementById(`img_${checkbox.id}`);
@@ -211,27 +243,33 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     });
     scriptOptions.forEach(checkbox => {
+      const k = 'executeStartupScript';
       checkbox.addEventListener('change', () => {
-        chrome.storage.local.get(["executeStartupScript"], (items) => {
-          const disabledOptionMap = (items["executeStartupScript"]?.options?.disabledOptions || []).reduce((acc, cur) => {
+        chrome.storage.local.get([k], (items) => {
+          const disabledOptionMap = (items[k]?.options?.disabledOptions || []).reduce((acc, cur) => {
             acc[cur] = true;
             return acc;
           }, {});
           disabledOptionMap[checkbox.id] = !checkbox.checked;
           const obj = {
-            executeStartupScript: { ...items["executeStartupScript"], options: { ...items["executeStartupScript"].options, disabledOptions: Object.keys(disabledOptionMap).reduce((acc, cur) => {
-              if (disabledOptionMap[cur]) acc.push(cur);
-              return acc;
-            }, []) } }
+            [k]: {
+              ...items[k], options: {
+                ...items[k].options, disabledOptions: Object.keys(disabledOptionMap).reduce((acc, cur) => {
+                  if (disabledOptionMap[cur]) acc.push(cur);
+                  return acc;
+                }, [])
+              }
+            }
           };
           chrome.storage.local.set(obj);
         });
       });
     });
     scriptTextArea.addEventListener('blur', () => {
-      chrome.storage.local.get(["executeStartupScript"], (items) => {
+      const k = 'executeStartupScript';
+      chrome.storage.local.get([k], (items) => {
         const obj = {
-          executeStartupScript: { ...items["executeStartupScript"], options: { ...items["executeStartupScript"].options, script: { ...items["executeStartupScript"].options.script, bash: scriptTextArea.value } } }
+          [k]: { ...items[k], options: { ...items[k].options, script: { ...items[k].options.script, bash: scriptTextArea.value } } }
         };
         chrome.storage.local.set(obj);
       });

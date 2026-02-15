@@ -47,12 +47,15 @@
       </tr>
       <tr>
         <td></td>
-        <td>The decoration can be changed by using <a href="https://chromewebstore.google.com/search/user%20css">the User CSS extensions</a>.</td>
+        <td>The decoration can be changed by using <a href="https://chromewebstore.google.com/search/user%20css">the
+            User CSS extensions</a>.</td>
       </tr>
       <tr>
         <td></td>
-        <td><details><summary>Default decoration definition (Stylus format).</summary>
-          <pre>@-moz-document regexp("https:\\/\\/sandbox-\\d+\\.reactblade\\.portal\\.azure.net\\/.*") {
+        <td>
+          <details>
+            <summary>Default decoration definition (Stylus format).</summary>
+            <pre>@-moz-document regexp("https:\\/\\/sandbox-\\d+\\.reactblade\\.portal\\.azure.net\\/.*") {
   <span class="comment">/* for light theme */</span>
   <span class="selector">.fxs-mode-light</span> {
     <span class="comment">/* for more than ten resources */</span>
@@ -94,7 +97,9 @@
     <span class="selector">.tweakit-resource-count-000 a </span> { <span class="property">color</span>: <span class="value">rgb(127,127,127)</span>; }
     <span class="selector">.tweakit-resource-count-000 > div </span> { <span class="property">background-color</span>: <span class="value">rgba(32,32,32,0.7)</span>; }
   }
-}</pre> </details></td>
+}</pre>
+          </details>
+        </td>
       </tr>
     </table>
   </div>
@@ -119,12 +124,16 @@
       </tr>
       <tr>
         <td>
-        <label class="switch"><input type="checkbox" class="level_0" id="notify_filter" /><span
-              class="slider"></span><span>Suppress desktop notifications matching this RegExp:</span>
-        </label>
+          <div>
+            <label class="switch"><input type="checkbox" class="level_0" id="notify_filter" /><span
+                class="slider"></span><span>Suppress desktop notifications matching this RegExp:</span>
+            </label>
+          </div>
         </td>
-        <td><textarea id="notify_filter_regex" rows="4" cols="40"></textarea><output id="notify_filter_valid"></output></td>
-    </tr>
+        <td>
+          <textarea id="notify_filter_regex" rows="4" cols="40"></textarea><output id="notify_filter_valid"></output>
+        </td>
+      </tr>
     </table>
     <h2>Experimental features</h2>
     <table>
@@ -181,7 +190,9 @@
           </div>
           <div>
             <label class="switch"><input type="checkbox" id="resource_copy_vm_bastion" /><span
-                class="slider"></span><span>VM and Bastion Ids as options for `az network bastion` (*)</span><p>* Only for Azure Virtual Machines</p></label>
+                class="slider"></span><span>VM and Bastion Ids as options for `az network bastion` (*)</span>
+              <p>* Only for Azure Virtual Machines</p>
+            </label>
           </div>
         </td>
         <td>
@@ -265,7 +276,7 @@
           </div>
         </td>
         <td><textarea id="cloudshell_startup_script" rows="6" style="width:100%;"
-            placeholder="# Input script here. i.e. alias ll=\"ls -la\", etc"></textarea></td>
+            placeholder="# Input script here. i.e. alias ll=\" ls -la\", etc"></textarea></td>
       </tr>
       <tr>
         <td>
