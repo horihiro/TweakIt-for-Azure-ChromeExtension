@@ -336,5 +336,116 @@ div.user_setting_grid:last-child {
 }
 
 .short {
-  width: 200px;
+  width: 300px;
+  box-sizing: border-box;
+}
+
+/* Input elements styling */
+input[type="text"],
+select,
+textarea {
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+  font-size: 14px;
+  padding: 8px 12px;
+  color: #000;
+  background-color: #fff;
+  border: 1px solid rgba(var(--text-rgb), 0.3);
+  border-radius: 4px;
+  transition: all 0.2s ease;
+  outline: none;
+}
+
+input[type="text"]:focus,
+select:focus,
+textarea:focus {
+  background-color: #fff;
+  border-color: var(--accent-cta);
+  box-shadow: 0 0 0 2px rgba(0, 164, 255, 0.2);
+}
+
+input[type="text"]:hover:not(:disabled),
+select:hover:not(:disabled),
+textarea:hover:not(:disabled) {
+  border-color: rgba(var(--text-rgb), 0.5);
+}
+
+input[type="text"]:disabled,
+select:disabled,
+textarea:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background-color: #f0f0f0;
+  color: #666;
+}
+
+input[type="text"]::placeholder,
+textarea::placeholder {
+  color: #999;
+}
+
+/* Full-width inputs */
+input[type="text"]:not(.short),
+select:not(.short) {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+textarea {
+  resize: vertical;
+  min-height: 60px;
+  line-height: 1.5;
+}
+
+select {
+  cursor: pointer;
+  background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 12 12"><path fill="%23000000" d="M6 9L1 4h10z"/></svg>');
+  background-repeat: no-repeat;
+  background-position: right 8px center;
+  padding-right: 32px;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+}
+
+/* Button styling */
+button {
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+  font-size: 14px;
+  font-weight: 600;
+  padding: 10px 20px;
+  color: white;
+  background: linear-gradient(135deg, #00A4FF 0%, #0078D4 100%);
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  outline: none;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+button:hover:not(:disabled) {
+  background: linear-gradient(135deg, #33B5FF 0%, #00A4FF 100%);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+  transform: translateY(-1px);
+}
+
+button:active:not(:disabled) {
+  background: linear-gradient(135deg, #66CCFF 0%, #33B5FF 100%);
+  transform: translateY(0);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background: rgba(var(--text-rgb), 0.2);
+  box-shadow: none;
+}
+
+/* Output element styling */
+output {
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+  font-size: 13px;
+  margin-left: 8px;
+  color: var(--accent-100);
 }
