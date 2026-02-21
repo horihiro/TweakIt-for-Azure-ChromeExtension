@@ -264,54 +264,82 @@
     <table>
       <tr>
         <td>
-          <h3 class="switch">User setting profiles</h3>
+          <span style="font-size: large;">User setting profiles</span>
         </td>
+        <td></td>
+      </tr>
+      <tr>
         <td>
-          <div class="setting_control_container_header">
-          </div>
-          <form id="cloudshell_setting_form">
-            <!-- input fields for resource Ids of Network Profile, Azure Relay and 2 Subnet -->
-            <div class="user_setting_grid">
-              <h3>Profile:</h3>
-            <select id="cloudshell_settings_profile_select" class="short" disabled>
-              <option value="current">(Current Cloud Shell setting)</option>
-            </select>
-              <h3>General Settings:</h3>
-              <p></p>
-              <div class="indent">
-                <label for="profile_name"><h3>Profile name:</h3></label>
-              </div>
-              <input class="short" type="text" id="profile_name" name="profile_name" placeholder="(Current Cloud Shell setting)" disabled/>
-              <div class="indent">
-                <label for="shell_type"><h3>Shell type:</h3></label>
-              </div>
-              <select class="short" id="shell_type" name="shell_type" disabled></select>
-              <h3>Storage Settings:</h3>
-              <p></p>
-              <div class="indent">
-                <label for="storage_account"><h3>Storage Account Id:</h3></label>
-              </div>
-              <input type="text" id="storage_account" name="storage_account" disabled />
-              <div class="indent">
-                <label for="file_share"><h3>File Share:</h3></label>
-              </div>
-              <input class="short" type="text" id="file_share" name="file_share" disabled />
-              <h3>Network Settings:</h3>
-              <p></p>
-              <div class="indent">
-                <label for="vnet_location"><h3>Virtual Network Location:</h3></label>
-              </div>
-              <select class="short" id="vnet_location" name="vnet_location" disabled></select>
-              <div class="indent">
-                <label for="network_profile"><h3>Network profile Id:</h3></label>
-              </div>
-              <input type="text" id="network_profile" name="network_profile" disabled />
-              <div class="indent">
-                <label for="azure_relay"><h3>Azure Relay Id:</h3></label>
-              </div>
-              <input type="text" id="azure_relay" name="azure_relay" disabled />
-            </div>
-          </form>
+          <h2>Profile:</h2>
+        </td>
+        <td><select id="cloudshell_settings_profile_select" class="short" disabled>
+            <option value="current">(Current Cloud Shell setting)</option>
+          </select></td>
+      </tr>
+      <tr>
+        <td>
+          <h2>General Settings:</h2>
+        </td>
+        <td></td>
+      </tr>
+      <tr>
+        <td>
+          <h3>Profile name:</h3>
+        </td>
+        <td><input class="short" type="text" id="profile_name" name="profile_name"
+            placeholder="(Current Cloud Shell setting)" disabled /></td>
+      </tr>
+      <tr>
+        <td>
+          <h3>Shell type:</h3>
+        </td>
+        <td><select class="short" id="shell_type" name="shell_type" disabled></select></td>
+      </tr>
+      <tr>
+        <td>
+          <h2>Storage Settings:</h2>
+        </td>
+        <td></td>
+      </tr>
+      <tr>
+        <td>
+          <h3>Storage Account Id:</h3>
+        </td>
+        <td><input type="text" id="storage_account" name="storage_account" disabled /></td>
+      </tr>
+      <tr>
+        <td>
+          <h3>File Share:</h3>
+        </td>
+        <td><input class="short" type="text" id="file_share" name="file_share" disabled /></td>
+      </tr>
+      <tr>
+        <td>
+          <h2>Network Settings:</h2>
+        </td>
+        <td></td>
+      </tr>
+      <tr>
+        <td>
+          <h3>Virtual Network Location:</h3>
+        </td>
+        <td><select class="short" id="vnet_location" name="vnet_location" disabled></select></td>
+      </tr>
+      <tr>
+        <td>
+          <h3>Network Profile Id:</h3>
+        </td>
+        <td><input type="text" id="network_profile" name="network_profile" disabled /></td>
+      </tr>
+      <tr>
+        <td>
+          <h3>Azure Relay Id:</h3>
+        </td>
+        <td><input type="text" id="azure_relay" name="azure_relay" disabled /></td>
+      </tr>
+      <tr>
+        <td></td>
+        <td>
           <div class="setting_control_container_footer">
             <button type="button" id="cloudshell_save_settings">Save to local</button>
             <button type="button" id="cloudshell_remove_settings">Remove from local</button>
@@ -332,7 +360,7 @@
                 class="slider"></span><span>Save executed commands in history</span></label>
           </div>
         </td>
-        <td><textarea id="cloudshell_startup_script" rows="4"  cols="100" 
+        <td><textarea id="cloudshell_startup_script" rows="4" cols="100"
             placeholder="# Input script here. i.e. alias ll=\" ls -la\", etc"></textarea></td>
       </tr>
       <tr>

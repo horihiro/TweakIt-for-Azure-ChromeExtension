@@ -340,6 +340,16 @@ div.user_setting_grid:last-child {
   box-sizing: border-box;
 }
 
+td > h2 {
+  margin: 0 0 0 50%;
+  vertical-align: middle;
+}
+td > h3 {
+  margin: 8px 8px 0 0;
+  text-align: right;
+  vertical-align: middle;
+}
+
 /* Input elements styling */
 input[type="text"],
 select,
