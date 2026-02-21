@@ -945,7 +945,7 @@ class ToastWatcher extends Watcher {
         if (!addedNode.innerHTML || !/<use [^>]+><\/use>/.test(addedNode.innerHTML) || addedNode.parentNode.className !== 'fxs-toast-icon') return;
         const li = addedNode.closest(this.TOAST_ITEM_SELECTOR);
         if (this.filterRegExp && this.filterRegExp.test(li.innerHTML) === true) {
-//        console.log( "Suppressing notification due to RegExp match." );
+          //        console.log( "Suppressing notification due to RegExp match." );
           return;
         }
         this.send2serviceWorker();
@@ -1092,7 +1092,7 @@ class ContextMenuUpdater extends Watcher {
 const storeAccessToken = async () => {
   const CLIENT_ID = 'c44b4083-3bb0-49c1-b47d-974e53cbdf3c';
   const SCOPES = ['https://management.core.windows.net//user_impersonation', 'https://management.core.windows.net//.default'];
-  const tenantId = localStorage.getItem('SavedDefaultDirectory') || document.querySelectorAll('button.fxs-menu-account')[0].getAttribute('title').split(/\n/)[2].replace(/.*\(([\da-f]{8}(?:-[\da-f]{4}){4}[\da-f]{8})\)/, '$1');
+  const tenantId = document.querySelectorAll('button.fxs-menu-account')[0].getAttribute('title').split(/\n/)[2].replace(/.*\(([\da-f]{8}(?:-[\da-f]{4}){4}[\da-f]{8})\)/, '$1') || localStorage.getItem('SavedDefaultDirectory');
   const key = [
     ...JSON.parse(sessionStorage.getItem(`msal.1.token.keys.${CLIENT_ID}`) || '{}').accessToken || [],
     ...JSON.parse(sessionStorage.getItem(`msal.token.keys.${CLIENT_ID}`) || '{}').accessToken || []
@@ -1135,6 +1135,7 @@ const storeAccessToken = async () => {
       init(changes);
     });
     init();
+    await storeAccessToken();
     setInterval(async () => {
       await storeAccessToken();
     }, 10000);
