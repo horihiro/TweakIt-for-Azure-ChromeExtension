@@ -124,7 +124,7 @@
       </tr>
       <tr>
         <td>
-          <div>
+          <div class="indent">
             <label class="switch"><input type="checkbox" class="level_0" id="notify_filter" /><span
                 class="slider"></span><span>Suppress desktop notifications matching this RegExp:</span>
             </label>
@@ -156,39 +156,39 @@
           <label class="switch"><input type="checkbox" class="level_0" id="resource_copy" /><span
               class="slider"></span><span>Copy
               resource information</span></label>
-          <div>
+          <div class="indent">
             <label class="switch"><input type="checkbox" id="resource_copy_name" /><span
                 class="slider"></span><span>Resource name</span></label>
           </div>
-          <div>
+          <div class="indent">
             <label class="switch"><input type="checkbox" id="resource_copy_id" /><span
                 class="slider"></span><span>Resource Id</span></label>
           </div>
-          <div>
+          <div class="indent">
             <label class="switch"><input type="checkbox" id="resource_copy_azcli" /><span
                 class="slider"></span><span>Resource name and group as Azure CLI options</span></label>
           </div>
-          <div>
+          <div class="indent">
             <label class="switch"><input type="checkbox" id="resource_copy_azpwsh" /><span
                 class="slider"></span><span>Resource name and group as Azure PowerShell options</span></label>
           </div>
-          <div>
+          <div class="indent">
             <label class="switch"><input type="checkbox" id="resource_copy_arm_json" /><span
                 class="slider"></span><span>ARM template (JSON)</span></label>
           </div>
-          <div>
+          <div class="indent">
             <label class="switch"><input type="checkbox" id="resource_copy_arm_bicep" /><span
                 class="slider"></span><span>ARM template (Bicep)</span></label>
           </div>
-          <div>
+          <div class="indent">
             <label class="switch"><input type="checkbox" id="resource_copy_terraform_azapi" /><span
                 class="slider"></span><span>Terraform (AzApi)</span></label>
           </div>
-          <div>
+          <div class="indent">
             <label class="switch"><input type="checkbox" id="resource_copy_terraform_azurerm" /><span
                 class="slider"></span><span>Terraform (AzureRM)</span></label>
           </div>
-          <div>
+          <div class="indent">
             <label class="switch"><input type="checkbox" id="resource_copy_vm_bastion" /><span
                 class="slider"></span><span>VM and Bastion Ids as options for `az network bastion` (*)</span>
               <p>* Only for Azure Virtual Machines</p>
@@ -264,13 +264,70 @@
     <table>
       <tr>
         <td>
+          <h3 class="switch">User setting profiles</h3>
+        </td>
+        <td>
+          <div class="setting_control_container_header">
+          </div>
+          <form id="cloudshell_setting_form">
+            <!-- input fields for resource Ids of Network Profile, Azure Relay and 2 Subnet -->
+            <div class="user_setting_grid">
+              <h3>Profile:</h3>
+            <select id="cloudshell_settings_profile_select" class="short" disabled>
+              <option value="current">(Current Cloud Shell setting)</option>
+            </select>
+              <h3>General Settings:</h3>
+              <p></p>
+              <div class="indent">
+                <label for="profile_name">Profile name:</label>
+              </div>
+              <input class="short" type="text" id="profile_name" name="profile_name" placeholder="(Current Cloud Shell setting)" disabled/>
+              <div class="indent">
+                <label for="shell_type">Shell type:</label>
+              </div>
+              <select class="short" id="shell_type" name="shell_type" disabled></select>
+              <h3>Storage Settings:</h3>
+              <p></p>
+              <div class="indent">
+                <label for="storage_account">Storage Account Id:</label>
+              </div>
+              <input type="text" id="storage_account" name="storage_account" disabled />
+              <div class="indent">
+                <label for="file_share">File Share:</label>
+              </div>
+              <input class="short" type="text" id="file_share" name="file_share" disabled />
+              <h3>Network Settings:</h3>
+              <p></p>
+              <div class="indent">
+                <label for="vnet_location">Virtual Network Location:</label>
+              </div>
+              <select class="short" id="vnet_location" name="vnet_location" disabled></select>
+              <div class="indent">
+                <label for="network_profile">Network profile Id:</label>
+              </div>
+              <input type="text" id="network_profile" name="network_profile" disabled />
+              <div class="indent">
+                <label for="azure_relay">Azure Relay Id:</label>
+              </div>
+              <input type="text" id="azure_relay" name="azure_relay" disabled />
+            </div>
+          </form>
+          <div class="setting_control_container_footer">
+            <button type="button" id="cloudshell_save_settings">Save to local</button>
+            <button type="button" id="cloudshell_remove_settings">Remove from local</button>
+            <button type="button" id="cloudshell_apply_settings">Apply to Cloud Shell</button>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td>
           <label class="switch"><input type="checkbox" class="level_0" id="cloudshell_enable_startup" /><span
               class="slider"></span><span>Custom startup scripts (Bash only)</span></label>
-          <div>
+          <div class="indent">
             <label class="switch"><input type="checkbox" id="cloudshell_enable_startup_visible" /><span
                 class="slider"></span><span>Show executed commands</span></label>
           </div>
-          <div>
+          <div class="indent">
             <label class="switch"><input type="checkbox" id="cloudshell_enable_startup_history" /><span
                 class="slider"></span><span>Save executed commands in history</span></label>
           </div>

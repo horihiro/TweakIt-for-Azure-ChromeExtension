@@ -10,6 +10,9 @@
     "contextMenus",
     "notifications"
   ],
+  "host_permissions": [
+    "https://management.azure.com/*"
+  ],
   "background": {
     "service_worker": "background/service-worker.js"
   },

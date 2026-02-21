@@ -55,7 +55,7 @@ h1 img {
 }
 
 h3 {
-  color: var(--accent-700);
+  color: var(--text);
   margin: 0 0 12px 0
 }
 
@@ -193,14 +193,15 @@ input:checked:not(:disabled)+.slider {
   box-shadow: 0 0 0 2px rgba(10, 36, 60, 0.25) inset;
 }
 
-input~* {
+input[type="checkbox"]~* {
   color: var(--muted);
   font-weight: 700;
 }
 
-input:checked:not(:disabled)~* {
+input:checked:not(:disabled)~*,
+label>span {
   color: var(--text);
-  /* font-weight: 700; */
+  font-weight: 700;
 }
 
 input:checked+.slider::before {
@@ -216,37 +217,37 @@ table {
   width: 100%;
   border-collapse: collapse;
 
-  tr:has(input) {
+  tr:has(input[type="checkbox"]) {
     color: var(--muted);
   }
 
-  tr:has(input.level_0) img {
+  tr:has(input[type="checkbox"].level_0) img {
     filter: brightness(60%);
   }
 
-  tr:has(input.level_0) textarea {
+  tr:has(input[type="checkbox"].level_0) textarea {
     filter: brightness(60%);
     cursor: not-allowed;
   }
 
-  tr:has(input.level_0) div>label {
+  tr:has(input[type="checkbox"].level_0) div>label {
     cursor: not-allowed;
   }
 
-  tr:has(input.level_0:checked) {
+  tr:has(input[type="checkbox"].level_0:checked) {
     color: var(--text);
   }
 
-  tr:has(input.level_0:checked) img {
+  tr:has(input[type="checkbox"].level_0:checked) img {
     filter: brightness(100%);
   }
 
-  tr:has(input.level_0:checked) textarea {
+  tr:has(input[type="checkbox"].level_0:checked) textarea {
     filter: brightness(100%);
     cursor: text;
   }
 
-  tr:has(input.level_0:checked) div>label {
+  tr:has(input[type="checkbox"].level_0:checked) div>label {
     cursor: pointer;
   }
 
@@ -269,7 +270,7 @@ table {
   }
 
   label>p,
-  td div {
+  td div.indent {
     margin-left: calc(var(--slider-width) + var(--slider-margin-right));
   }
 }
@@ -311,4 +312,29 @@ a {
 
 a:hover {
   color: var(--accent-cta);
+}
+
+div.user_setting_grid {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 8px;
+  align-items: center;
+}
+
+div.setting_control_container_header {
+  text-align: left;
+  margin: 10px;
+}
+
+div.setting_control_container_footer {
+  text-align: right;
+  margin: 10px;
+}
+
+div.user_setting_grid:last-child {
+  margin-bottom: 16px;
+}
+
+.short {
+  width: 200px;
 }
