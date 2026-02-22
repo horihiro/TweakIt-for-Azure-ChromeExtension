@@ -297,16 +297,27 @@ document.addEventListener('DOMContentLoaded', async () => {
             'Authorization': `Bearer ${accessToken}`
           }
         });
-      const userSettingsData = userSettingResponse.status === 200 ? await userSettingResponse.json() : {
-        properties: {
-          networkType: 'Default',
-          preferredLocation: '',
-          preferredOsType: '',
-          preferredShellType: '',
-          sessionType: 'Ephemeral',
-          userSubscription: '',
+      const userSettingsData = await (async (response) => {
+        if (response.status === 200) return await response.json();
+        const subscriptionResponse = await fetch(
+        'https://management.azure.com/subscriptions?api-version=2018-07-01',
+        {
+          headers: {
+            'Authorization': `Bearer ${accessToken}`
+          }
+        });
+        const userSubscription = (await subscriptionResponse.json()).value?.sort((a, b) => a.displayName < b.displayName ? -1 : 1)[0]?.subscriptionId || '';
+        return {
+          properties: {
+            networkType: 'Default',
+            preferredLocation: response.headers.get(`x-ms-console-required-location`) || '',
+            preferredOsType: '',
+            preferredShellType: 'bash',
+            sessionType: 'Ephemeral',
+            userSubscription: userSubscription,
+          }
         }
-      };
+      })(userSettingResponse);
       console.log('Cloud Console User Settings:', userSettingsData);
 
       return userSettingsData.properties;
@@ -518,7 +529,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       });
     } catch (e) {
       console.error('Error fetching network data:', e);
-      userSettingsOptions.vnetLocation.add(new Option(currentSetting.vnetSettings.location?.replace(/ /g, '').toLowerCase() || ''));
+      userSettingsOptions.vnetLocation.add(new Option(currentSetting.vnetSettings?.location?.replace(/ /g, '').toLowerCase() || ''));
     }
     userSettingsOptions.profileName.value = '';
 
