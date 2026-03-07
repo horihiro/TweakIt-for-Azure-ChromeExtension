@@ -55,7 +55,7 @@ h1 img {
 }
 
 h3 {
-  color: var(--accent-700);
+  color: var(--text);
   margin: 0 0 12px 0
 }
 
@@ -193,14 +193,15 @@ input:checked:not(:disabled)+.slider {
   box-shadow: 0 0 0 2px rgba(10, 36, 60, 0.25) inset;
 }
 
-input~* {
+input[type="checkbox"]~* {
   color: var(--muted);
   font-weight: 700;
 }
 
-input:checked:not(:disabled)~* {
+input:checked:not(:disabled)~*,
+label>span {
   color: var(--text);
-  /* font-weight: 700; */
+  font-weight: 700;
 }
 
 input:checked+.slider::before {
@@ -216,37 +217,37 @@ table {
   width: 100%;
   border-collapse: collapse;
 
-  tr:has(input) {
+  tr:has(input[type="checkbox"]) {
     color: var(--muted);
   }
 
-  tr:has(input.level_0) img {
+  tr:has(input[type="checkbox"].level_0) img {
     filter: brightness(60%);
   }
 
-  tr:has(input.level_0) textarea {
+  tr:has(input[type="checkbox"].level_0) textarea {
     filter: brightness(60%);
     cursor: not-allowed;
   }
 
-  tr:has(input.level_0) div>label {
+  tr:has(input[type="checkbox"].level_0) div>label {
     cursor: not-allowed;
   }
 
-  tr:has(input.level_0:checked) {
+  tr:has(input[type="checkbox"].level_0:checked) {
     color: var(--text);
   }
 
-  tr:has(input.level_0:checked) img {
+  tr:has(input[type="checkbox"].level_0:checked) img {
     filter: brightness(100%);
   }
 
-  tr:has(input.level_0:checked) textarea {
+  tr:has(input[type="checkbox"].level_0:checked) textarea {
     filter: brightness(100%);
     cursor: text;
   }
 
-  tr:has(input.level_0:checked) div>label {
+  tr:has(input[type="checkbox"].level_0:checked) div>label {
     cursor: pointer;
   }
 
@@ -269,7 +270,7 @@ table {
   }
 
   label>p,
-  td div {
+  td div.indent {
     margin-left: calc(var(--slider-width) + var(--slider-margin-right));
   }
 }
@@ -311,4 +312,150 @@ a {
 
 a:hover {
   color: var(--accent-cta);
+}
+
+div.user_setting_grid {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 8px;
+  align-items: center;
+}
+
+div.setting_control_container_header {
+  text-align: left;
+  margin: 10px;
+}
+
+div.setting_control_container_footer {
+  text-align: right;
+  margin: 10px;
+}
+
+div.user_setting_grid:last-child {
+  margin-bottom: 16px;
+}
+
+.short {
+  width: 300px;
+  box-sizing: border-box;
+}
+
+td > h2 {
+  margin: 0 0 0 50%;
+  vertical-align: middle;
+}
+td > h3 {
+  margin: 8px 8px 0 0;
+  text-align: right;
+  vertical-align: middle;
+}
+
+/* Input elements styling */
+input[type="text"],
+select,
+textarea {
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+  font-size: 14px;
+  padding: 8px 12px;
+  color: #000;
+  background-color: #fff;
+  border: 1px solid rgba(var(--text-rgb), 0.3);
+  border-radius: 4px;
+  transition: all 0.2s ease;
+  outline: none;
+}
+
+input[type="text"]:focus,
+select:focus,
+textarea:focus {
+  background-color: #fff;
+  border-color: var(--accent-cta);
+  box-shadow: 0 0 0 2px rgba(0, 164, 255, 0.2);
+}
+
+input[type="text"]:hover:not(:disabled),
+select:hover:not(:disabled),
+textarea:hover:not(:disabled) {
+  border-color: rgba(var(--text-rgb), 0.5);
+}
+
+input[type="text"]:disabled,
+select:disabled,
+textarea:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background-color: #f0f0f0;
+  color: #666;
+}
+
+input[type="text"]::placeholder,
+textarea::placeholder {
+  color: #999;
+}
+
+/* Full-width inputs */
+input[type="text"]:not(.short),
+select:not(.short) {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+textarea {
+  resize: vertical;
+  min-height: 60px;
+  line-height: 1.5;
+}
+
+select {
+  cursor: pointer;
+  background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 12 12"><path fill="%23000000" d="M6 9L1 4h10z"/></svg>');
+  background-repeat: no-repeat;
+  background-position: right 8px center;
+  padding-right: 32px;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+}
+
+/* Button styling */
+button {
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+  font-size: 14px;
+  font-weight: 600;
+  padding: 10px 20px;
+  color: white;
+  background: linear-gradient(135deg, #00A4FF 0%, #0078D4 100%);
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  outline: none;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+button:hover:not(:disabled) {
+  background: linear-gradient(135deg, #33B5FF 0%, #00A4FF 100%);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+  transform: translateY(-1px);
+}
+
+button:active:not(:disabled) {
+  background: linear-gradient(135deg, #66CCFF 0%, #33B5FF 100%);
+  transform: translateY(0);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background: rgba(var(--text-rgb), 0.2);
+  box-shadow: none;
+}
+
+/* Output element styling */
+output {
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+  font-size: 13px;
+  margin-left: 8px;
+  color: var(--accent-100);
 }

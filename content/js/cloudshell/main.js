@@ -183,7 +183,7 @@ const socketMessageHandler = (e) => {
     const str = typeof data === 'string' ? data : new TextDecoder().decode(data);
     originalTerminalWrite(data);
 
-    if (!['bash', 'pwsh'].includes(globalSettings.shellType)) return;
+    if ('bash' !== globalSettings.shellType) return;
     const notifyPromptUpdated = () => {
       return setTimeout(() => {
         promptTimeout = null;

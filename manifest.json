@@ -1,14 +1,17 @@
 {
   "manifest_version": 3,
   "name": "TweakIt for Microsoft Azure Portal",
-  "version": "1.1.3",
-  "version_name": "1.1.3- pike",
+  "version": "1.1.4",
+  "version_name": "1.1.4-quillfish",
   "description": "Add features to Azure Portal",
   "permissions": [
     "storage",
     "tabs",
     "contextMenus",
     "notifications"
+  ],
+  "host_permissions": [
+    "https://management.azure.com/*"
   ],
   "background": {
     "service_worker": "background/service-worker.js"

@@ -932,7 +932,9 @@ class ToastWatcher extends Watcher {
   constructor() {
     super();
     this.TARGET_CLASS_TOAST = '.fxs-toast';
+    this.TOAST_ITEM_SELECTOR = 'li.fxs-toast-item';
     this.messageQueue = [];
+    this.filterRegExp = null;
 
     this.observer = new MutationObserver(this.mainObserverCallback.bind(this));
   }
@@ -941,6 +943,11 @@ class ToastWatcher extends Watcher {
     mutations.forEach((mutation/* , i, array */) => {
       Array.prototype.forEach.call(mutation.addedNodes, (addedNode/* , i, array */) => {
         if (!addedNode.innerHTML || !/<use [^>]+><\/use>/.test(addedNode.innerHTML) || addedNode.parentNode.className !== 'fxs-toast-icon') return;
+        const li = addedNode.closest(this.TOAST_ITEM_SELECTOR);
+        if (this.filterRegExp && this.filterRegExp.test(li.innerHTML) === true) {
+          //        console.log( "Suppressing notification due to RegExp match." );
+          return;
+        }
         this.send2serviceWorker();
       });
     });
@@ -952,9 +959,17 @@ class ToastWatcher extends Watcher {
 
   startWatching(options) {
     this.options = options;
+    if (options.enabledOptions?.includes('notify_filter') && options.filterRegExp) {
+      try {
+        this.filterRegExp = new RegExp(options.filterRegExp);
+      }
+      catch {
+        this.filterRegExp = null;
+      }
+    }
     const toastContainer = document.querySelector(this.TARGET_CLASS_TOAST);
     if (toastContainer) {
-      this.observer.observe(document.querySelector(this.TARGET_CLASS_TOAST), { childList: true, subtree: true });
+      this.observer.observe(toastContainer, { childList: true, subtree: true });
       return
     }
     const toastContainerObserver = new MutationObserver((/* mutations */) => {
@@ -1077,7 +1092,7 @@ class ContextMenuUpdater extends Watcher {
 const storeAccessToken = async () => {
   const CLIENT_ID = 'c44b4083-3bb0-49c1-b47d-974e53cbdf3c';
   const SCOPES = ['https://management.core.windows.net//user_impersonation', 'https://management.core.windows.net//.default'];
-  const tenantId = localStorage.getItem('SavedDefaultDirectory') || document.querySelectorAll('button.fxs-menu-account')[0].getAttribute('title').split(/\n/)[2].replace(/.*\(([\da-f]{8}(?:-[\da-f]{4}){4}[\da-f]{8})\)/, '$1');
+  const tenantId = document.querySelectorAll('button.fxs-menu-account')[0].getAttribute('title').split(/\n/)[2].replace(/.*\(([\da-f]{8}(?:-[\da-f]{4}){4}[\da-f]{8})\)/, '$1') || localStorage.getItem('SavedDefaultDirectory');
   const key = [
     ...JSON.parse(sessionStorage.getItem(`msal.1.token.keys.${CLIENT_ID}`) || '{}').accessToken || [],
     ...JSON.parse(sessionStorage.getItem(`msal.token.keys.${CLIENT_ID}`) || '{}').accessToken || []
@@ -1120,6 +1135,7 @@ const storeAccessToken = async () => {
       init(changes);
     });
     init();
+    await storeAccessToken();
     setInterval(async () => {
       await storeAccessToken();
     }, 10000);
