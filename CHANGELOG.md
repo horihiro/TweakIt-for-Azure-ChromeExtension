@@ -4,6 +4,14 @@
 ### New feature(s)
   - Toast Watcher: add notification filter options to control which notifications are displayed (by @daiplusplus)
 
+### Improve feature(s)
+  - Settings UI: refactor and redesign for improved layout, accessibility, and usability
+  - Cloud Shell: enhance settings UI and functionality for Cloud Shell profiles
+  - Cloud Shell: remove PowerShell support due to the stability issues
+
+### Bug Fix(es)
+  - Cloud Shell: fix tenant ID retrieval order in storeAccessToken
+
 ## [1.1.3](https://github.com/horihiro/TweakIt-for-Azure-ChromeExtension/releases/tag/1.1.3)
 ### Bug Fix(es)
   - Cloud Shell: remove redundant default startup command and ensure proper command formatting
